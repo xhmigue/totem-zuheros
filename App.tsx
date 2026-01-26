@@ -2,55 +2,90 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import SubHeader from './components/SubHeader';
-import MenuGrid from './components/MenuGrid';
-import SectionDetail from './components/SectionDetail';
-import { MenuSection } from './types';
+import NavigationGrid from './components/NavigationGrid';
+import DetailView from './components/DetailView';
+import { NavigationNode, NavigationState } from './types';
+import { ZUHEROS_DATA } from './navigationData';
 
 const App: React.FC = () => {
-  const [currentSection, setCurrentSection] = useState<MenuSection | null>(null);
+  const [navState, setNavState] = useState<NavigationState>({
+    currentNode: ZUHEROS_DATA,
+    history: []
+  });
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update clock every second
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const handleSectionSelect = (section: MenuSection) => {
-    setCurrentSection(section);
+  const handleNodeSelect = (node: NavigationNode) => {
+    setNavState(prev => ({
+      currentNode: node,
+      history: [...prev.history, prev.currentNode]
+    }));
   };
 
   const handleGoBack = () => {
-    setCurrentSection(null);
+    if (navState.history.length === 0) return;
+    
+    const newHistory = [...navState.history];
+    const previousNode = newHistory.pop()!;
+    
+    setNavState({
+      currentNode: previousNode,
+      history: newHistory
+    });
   };
 
   const handleGoHome = () => {
-    setCurrentSection(null);
+    setNavState({
+      currentNode: ZUHEROS_DATA,
+      history: []
+    });
   };
 
+  const isHome = navState.history.length === 0;
+
   return (
-    <div className="flex flex-col h-screen w-full bg-white overflow-hidden">
-      {/* Logos and main header */}
+    <div className="flex flex-col h-screen w-full bg-[#f8fafc] overflow-hidden font-sans">
       <Header date={currentTime} />
 
-      {/* Navigation subheader */}
       <SubHeader 
         onBack={handleGoBack} 
         onHome={handleGoHome} 
-        isHome={currentSection === null} 
+        isHome={isHome}
+        title={navState.currentNode.titulo}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto p-8 bg-gray-50">
-        {!currentSection ? (
-          <MenuGrid onSelect={handleSectionSelect} />
+      <main className="flex-1 overflow-y-auto p-12 custom-scrollbar">
+        {navState.currentNode.tipo === 'submenu' ? (
+          <NavigationGrid 
+            options={navState.currentNode.opciones || []} 
+            onSelect={handleNodeSelect} 
+          />
         ) : (
-          <SectionDetail section={currentSection} onBack={handleGoBack} />
+          <DetailView 
+            node={navState.currentNode} 
+            onBack={handleGoBack} 
+          />
         )}
       </main>
 
-      {/* Footer / Decor (optional, image doesn't show one but good for totem usability) */}
-      <footer className="h-4 bg-[#1c6c3e]" />
+      <footer className="h-6 bg-[#1c6c3e] shadow-[0_-4px_20px_rgba(0,0,0,0.1)]" />
+      
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 12px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #1c6c3e;
+          border-radius: 6px;
+        }
+      `}</style>
     </div>
   );
 };
