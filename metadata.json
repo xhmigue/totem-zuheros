@@ -1,0 +1,7 @@
+{
+  "name": "Totem Zuheros",
+  "description": "Information kiosk application for the town of Zuheros, providing cultural, nature, and service information with a touch-optimized interface.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
