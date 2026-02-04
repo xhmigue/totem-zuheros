@@ -74,7 +74,7 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
     };
   }, [resetTimer]);
 
-  // Renderizado del contenido principal
+  // Renderizado del contenido principal ver video
   const renderContent = () => (
     <div className="relative w-full h-full">
       {/* Protector de Pantalla (Video) */}
