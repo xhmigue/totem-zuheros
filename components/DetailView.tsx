@@ -8,7 +8,7 @@ interface DetailViewProps {
 
 const DetailView: React.FC<DetailViewProps> = ({ node, onBack }) => {
   return (
-    <div className="max-w-5xl mx-auto bg-white rounded-[3.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.15)] overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
+    <div className="mx-auto bg-white rounded-[3.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.15)] overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-700">
       {/* Imagen de Cabecera */}
       {node.imagen && (
         <div className="relative h-[450px] w-full">
@@ -29,18 +29,18 @@ const DetailView: React.FC<DetailViewProps> = ({ node, onBack }) => {
           <div key={card.tipo + i}>
             {card.tipo === "text-h2" && (
               <h2
-                className={`text-6xl font-black text-[#1c6c3e] uppercase mb-12 border-b-4 border-[#d4e11d] pb-6 ${i > 0 ? "pt-12" : ""}`}
+                className={`text-7xl font-black text-[#1c6c3e] uppercase mb-12 border-b-4 border-[#d4e11d] pb-6 ${i > 0 ? "pt-12" : ""}`}
               >
                 {card.titulo}
               </h2>
             )}
             {card.tipo === "text-h3" && (
-              <h3 className="text-4xl font-black uppercase text-center p-6">
+              <h3 className="text-6xl font-black uppercase text-center p-6">
                 {card.titulo}
               </h3>
             )}
             {card.tipo === "text-p" && (
-              <p className="text-3xl text-gray-700 leading-relaxed font-medium pb-6">
+              <p className="text-5xl text-gray-700 leading-relaxed font-medium pb-6">
                 {card.titulo}
               </p>
             )}
@@ -52,7 +52,7 @@ const DetailView: React.FC<DetailViewProps> = ({ node, onBack }) => {
                 <table className="w-full border-collapse bg-white text-left text-sm">
                   <thead>
                     <tr
-                      className={`bg-gradient-to-r from-${card.color ?? "blue"}-600 to-${card.color ?? "blue"}-700 text-white`}
+                      className={`bg-gradient-to-r from-${card.color ?? "blue"}-600 to-${card.color ?? "blue"}-700 text-white text-5xl`}
                     >
                       <th className="px-6 py-4 font-bold uppercase tracking-wider">
                         {card.contenido.columnas[0]}
@@ -65,7 +65,7 @@ const DetailView: React.FC<DetailViewProps> = ({ node, onBack }) => {
                       </th>
                     </tr>
                     <tr
-                      className={`bg-${card.color ?? "blue"}-50 text-${card.color ?? "blue"}-900 border-b border-gray-200`}
+                      className={`bg-${card.color ?? "blue"}-50 text-${card.color ?? "blue"}-900 border-b border-gray-200 text-4xl`}
                     >
                       <th className="px-6 py-3 font-medium italic text-transparent">
                         {card.contenido.columnas[0]}
@@ -78,7 +78,7 @@ const DetailView: React.FC<DetailViewProps> = ({ node, onBack }) => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-gray-100 text-4xl">
                     {card.contenido.filas.map((fila, fIndex) => (
                       <tr
                         key={fIndex}
@@ -115,7 +115,7 @@ const DetailView: React.FC<DetailViewProps> = ({ node, onBack }) => {
                     <tr className={`bg-${card.color ?? "blue"}-900 text-white`}>
                       <th
                         colSpan={card.contenido.columnas.length}
-                        className="py-4 px-6 text-center text-xl font-bold tracking-widest uppercase"
+                        className="py-4 px-6 text-center text-5xl font-bold tracking-widest uppercase"
                       >
                         {card.titulo}
                       </th>
@@ -125,14 +125,14 @@ const DetailView: React.FC<DetailViewProps> = ({ node, onBack }) => {
                       {card.contenido.columnas.map((col, i) => (
                         <th
                           key={i}
-                          className="py-3 px-6 text-left text-sm font-semibold uppercase border-r border-white/10 last:border-0"
+                          className="py-3 px-6 text-left text-4xl font-semibold uppercase border-r border-white/10 last:border-0"
                         >
                           {col}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-gray-100 text-4xl">
                     {card.contenido.filas.map((fila, fIndex) => (
                       <tr
                         key={fIndex}
@@ -160,30 +160,12 @@ const DetailView: React.FC<DetailViewProps> = ({ node, onBack }) => {
               </div>
             )}
             {card.tipo === "text-p-relaxed" && (
-              <p className="text-[0.9em] text-[#666] -mt-4 px-[10px] leading-relaxed pt-6">
+              <p className="text-[#666] -mt-4 px-[10px] leading-relaxed pt-6 text-4xl">
                 {card.titulo}
               </p>
             )}
           </div>
         ))}
-
-        <div className="mt-20 flex justify-center">
-          <button
-            onClick={onBack}
-            className="bg-[#1c6c3e] text-white text-3xl font-black py-8 px-20 rounded-full shadow-[0_15px_40px_rgba(28,108,62,0.3)] hover:bg-[#1a6138] active:scale-95 transition-all transform flex items-center gap-6"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="4"
-              className="w-10 h-10"
-            >
-              <path d="M19 12H5m0 0l7-7m-7 7l7 7" />
-            </svg>
-            VOLVER AL MENÚ
-          </button>
-        </div>
       </div>
     </div>
   );

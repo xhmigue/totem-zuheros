@@ -1,6 +1,42 @@
 import { NavigationNode } from "./types";
 import { IMAGES } from "./assets";
-
+/*
+DJI_20250401112443_0002_D.webp
+DJI_20250401112750_0006_D.webp
+DJI_20250401112805_0007_D.webp
+DJI_20250401112814_0008_D.webp
+DJI_20250401113039_0009_D.webp
+DJI_20250401113105_0010_D.webp
+DJI_20250401113212_0013_D.webp
+DJI_20250401114738_0027_D.webp
+DJI_20250401114751_0028_D.webp
+DJI_20250401114806_0029_D.webp
+DJI_20250401115227_0031_D.webp
+DJI_20250401115235_0032_D.webp
+DJI_20250401115338_0033_D.webp
+DJI_20250401115345_0034_D.webp
+DJI_20250401134058_0009_D.webp
+DJI_20250401134104_0010_D.webp
+DJI_20250401134128_0011_D.webp
+DJI_20250401134148_0012_D.webp
+DJI_20250401134157_0013_D.webp
+DJI_20250401134225_0014_D.webp
+DJI_20250401134240_0015_D.webp
+DJI_20250401134307_0016_D.webp
+DJI_20250401134314_0017_D.webp
+DJI_20250401165753_0021_D.webp
+DJI_20250401165803_0022_D.webp
+DJI_20250401165814_0023_D.webp
+DJI_20250401165835_0024_D.webp
+DJI_20250401172951_0025_D.webp
+DJI_20250401173118_0028_D.webp
+DJI_20250401173431_0030_D.webp
+DJI_20250401173438_0031_D.webp
+DJI_20250401173805_0032_D.webp
+DJI_20250401173824_0033_D.webp
+DJI_20250401173853_0034_D.webp
+DJI_20250401174001_0036_D.webp
+*/
 export const ZUHEROS_DATA: NavigationNode = {
   id: "root",
   tipo: "submenu",
@@ -11,14 +47,16 @@ export const ZUHEROS_DATA: NavigationNode = {
       id: "turismo-cultural",
       tipo: "submenu",
       titulo: "Turismo Cultural",
-      logo: IMAGES.AYUNTAMIENTO,
+      logo: "DJI_20250401112443_0002_D.webp",
+      tipoLogo: "image",
       opciones: [
         {
           id: "cueva-de-los-murcielagos",
           tipo: "text",
-          titulo: "Turismo Cultural",
-          tituloGeneral: "CUEVA DE LOS MURCIÉLAGOS",
-          logo: "https://www.flaticon.com/free-animated-icon/target_6172513?related_id=6172513",
+          titulo: "CUEVA DE LOS MURCIÉLAGOS",
+          tituloGeneral: "Turismo Cultural",
+          logo: "DJI_20250401173118_0028_D.webp",
+          tipoLogo: "image",
           descripcion:
             "Espectacular fortaleza roquera de origen árabe (siglo IX) que se funde con la roca caliza. Ofrece las mejores vistas del pueblo y la Subbética. Fue residencia de los Señores de Zuheros y conserva restos de su palacio renacentista.",
           card: [
@@ -184,7 +222,8 @@ export const ZUHEROS_DATA: NavigationNode = {
           id: "ecomuseo-cueva-de-los-murcielagos",
           tipo: "submenu",
           titulo: "ECOMUSEO CUEVA DE LOS MURCIÉLAGOS",
-          logo: "https://cdn-icons-gif.flaticon.com/6172/6172512.gif",
+          logo: "DJI_20250401173118_0028_D.webp",
+          tipoLogo: "image",
           opciones: [
             {
               id: "museo-arqueologico",
@@ -212,42 +251,48 @@ export const ZUHEROS_DATA: NavigationNode = {
           id: "castillo-palacio",
           tipo: "submenu",
           titulo: "CASTILLO PALACIO",
-          logo: "https://cdn-icons-png.flaticon.com/512/2990/2990425.png",
+          logo: "DJI_20250401173118_0028_D.webp",
+          tipoLogo: "image",
           opciones: [],
         },
         {
           id: "museo-arqueologico",
           tipo: "submenu",
           titulo: "MUSEO ARQUEOLÓGICO",
-          logo: "https://cdn-icons-png.flaticon.com/512/2990/2990425.png",
+          logo: "DJI_20250401173118_0028_D.webp",
+          tipoLogo: "image",
           opciones: [],
         },
         {
           id: "museo-costumbres-y-artes-populares",
           tipo: "submenu",
           titulo: "MUSEO DE COSTUMBRES Y ARTES POPULARES",
-          logo: "https://cdn-icons-png.flaticon.com/512/2990/2990425.png",
+          logo: "DJI_20250401173118_0028_D.webp",
+          tipoLogo: "image",
           opciones: [],
         },
         {
           id: "observatorio",
           tipo: "submenu",
           titulo: "OBSERVATORIO",
-          logo: "https://cdn-icons-png.flaticon.com/512/2990/2990425.png",
+          logo: "DJI_20250401173118_0028_D.webp",
+          tipoLogo: "image",
           opciones: [],
         },
         {
           id: "iglesia",
           tipo: "submenu",
           titulo: "IGLESIA",
-          logo: "https://cdn-icons-png.flaticon.com/512/2990/2990425.png",
+          logo: "DJI_20250401173118_0028_D.webp",
+          tipoLogo: "image",
           opciones: [],
         },
         {
           id: "museo-estudio-del-pintor-francisco-poyato",
           tipo: "submenu",
           titulo: "MUSEO ESTUDIO DEL PINTOR FRANCISCO POYATO",
-          logo: "https://cdn-icons-png.flaticon.com/512/2990/2990425.png",
+          logo: "DJI_20250401173118_0028_D.webp",
+          tipoLogo: "image",
           opciones: [],
         },
       ],
@@ -256,7 +301,8 @@ export const ZUHEROS_DATA: NavigationNode = {
       id: "naturaleza",
       tipo: "submenu",
       titulo: "Turismo de Naturaleza",
-      logo: IMAGES.ICONO_CASTILLO,
+      logo: "DJI_20250401112750_0006_D.webp",
+      tipoLogo: "image",
       opciones: [
         {
           id: "cueva-murcielagos",
@@ -284,7 +330,8 @@ export const ZUHEROS_DATA: NavigationNode = {
       id: "productos",
       tipo: "submenu",
       titulo: "Productos de la Tierra",
-      logo: "https://cdn-icons-png.flaticon.com/512/3081/3081918.png",
+      logo: "DJI_20250401114738_0027_D.webp",
+      tipoLogo: "image",
       opciones: [
         {
           id: "quesos",
@@ -312,7 +359,8 @@ export const ZUHEROS_DATA: NavigationNode = {
       id: "fiestas-tradicionales",
       tipo: "submenu",
       titulo: "FIESTAS TRADICIONALES",
-      logo: "https://cdn-icons-png.flaticon.com/512/3081/3081918.png",
+      logo: "DJI_20250401173118_0028_D.webp",
+      tipoLogo: "image",
       opciones: [
         {
           id: "quesos",
@@ -340,7 +388,8 @@ export const ZUHEROS_DATA: NavigationNode = {
       id: "servicios",
       tipo: "submenu",
       titulo: "SERVICIOS",
-      logo: "https://cdn-icons-png.flaticon.com/512/3081/3081918.png",
+      logo: "DJI_20250401173805_0032_D.webp",
+      tipoLogo: "image",
       opciones: [
         {
           id: "quesos",
@@ -368,63 +417,8 @@ export const ZUHEROS_DATA: NavigationNode = {
       id: "agenda-mensual",
       tipo: "submenu",
       titulo: "AGENDA MENSUAL",
-      logo: "https://cdn-icons-png.flaticon.com/512/3081/3081918.png",
-      opciones: [
-        {
-          id: "quesos",
-          tipo: "text",
-          titulo: "Quesos de Zuheros",
-          logo: "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
-          descripcion:
-            "Famosos internacionalmente. Elaborados de forma artesanal con leche de cabra. No te pierdas la Fiesta del Queso en septiembre, donde se reúnen los mejores productores del país.",
-        },
-        {
-          id: "aceite",
-          tipo: "text",
-          titulo: "Aceite de Oliva D.O. Baena",
-          logo: "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=1200",
-          descripcion:
-            'El "oro líquido" de nuestra tierra. Zuheros pertenece a la prestigiosa Denominación de Origen Baena. Un aceite virgen extra con matices únicos gracias al clima de sierra.',
-        },
-      ],
-    },
-    {
-      id: "link-subbeticacordobesa",
-      tipo: "submenu",
-      titulo: "Link Subbética Cordobesa",
-      logo: "https://cdn-icons-png.flaticon.com/512/3081/3081918.png",
-      opciones: [
-        {
-          id: "quesos",
-          tipo: "text",
-          titulo: "Quesos de Zuheros",
-          logo: "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
-          descripcion:
-            "Famosos internacionalmente. Elaborados de forma artesanal con leche de cabra. No te pierdas la Fiesta del Queso en septiembre, donde se reúnen los mejores productores del país.",
-        },
-        {
-          id: "aceite",
-          tipo: "text",
-          titulo: "Aceite de Oliva D.O. Baena",
-          logo: "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=1200",
-          descripcion:
-            'El "oro líquido" de nuestra tierra. Zuheros pertenece a la prestigiosa Denominación de Origen Baena. Un aceite virgen extra con matices únicos gracias al clima de sierra.',
-        },
-      ],
-    },
-    {
-      id: "foto-postal",
-      tipo: "submenu",
-      titulo: "Foto Postal",
-      logo: "https://cdn-icons-png.flaticon.com/512/3081/3081918.png",
+      logo: "DJI_20250401173438_0031_D.webp",
+      tipoLogo: "image",
       opciones: [
         {
           id: "quesos",
@@ -449,4 +443,19 @@ export const ZUHEROS_DATA: NavigationNode = {
       ],
     },
   ],
+  protectordepantalla: {
+    id: "protectordepantalla",
+    tipo: "text",
+    titulo: "Protector de Pantalla",
+    logo: "https://cdn-icons-png.flaticon.com/512/3081/3081918.png",
+    imagen:
+      "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
+    video: "https://www.youtube.com/watch?v=1234567890",
+    protectordepantalla: true,
+    duracion: 10,
+    inactividad: 60,
+    tiempo: 10,
+    seleccionarprotector: "imagen",
+    descripcion: "Protege tu pantalla contra el daño causado por el sol.",
+  },
 };

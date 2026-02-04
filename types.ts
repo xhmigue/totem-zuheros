@@ -14,10 +14,25 @@ export interface NavigationNode {
   titulo: string;
   tituloGeneral?: string;
   logo: string; // Puede ser una URL de imagen o un identificador de icono
+  tipoLogo?: "image" | "icon" | "video" | "url";
   descripcion?: string;
   opciones?: NavigationNode[];
   imagen?: string; // Imagen principal para el modo detalle
   card?: CardElement[];
+  protectordepantalla?: {
+    id: string;
+    tipo: "text";
+    titulo: string;
+    logo: string;
+    imagen: string;
+    video: string;
+    protectordepantalla: boolean;
+    duracion: number;
+    inactividad: number;
+    tiempo: number;
+    seleccionarprotector: "video" | "imagen";
+    descripcion: string;
+  };
 }
 
 export interface NavigationState {

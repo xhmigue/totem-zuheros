@@ -11,7 +11,7 @@ import {
   FolderTree,
 } from "lucide-react";
 
-export const JSONEditor = () => {
+export const AppEditor = () => {
   const [data, setData] = useState<NavigationNode>(ZUHEROS_DATA);
   const [selectedNodeId, setSelectedNodeId] = useState<string>("root");
 
@@ -62,6 +62,11 @@ export const JSONEditor = () => {
         </h2>
         <TreeItem
           node={data}
+          onSelect={setSelectedNodeId}
+          selectedId={selectedNodeId}
+        />
+        <ProtectorDePantalla
+          node={data.protectordepantalla}
           onSelect={setSelectedNodeId}
           selectedId={selectedNodeId}
         />
@@ -219,6 +224,46 @@ const TreeItem = ({ node, onSelect, selectedId }: any) => {
   );
 };
 
+const ProtectorDePantalla = ({ node, onSelect, selectedId }: any) => {
+  const [isOpen, setIsOpen] = useState(true);
+  const isSelected = selectedId === node.id;
+
+  return (
+    <div className="ml-2">
+      <div
+        onClick={() => onSelect(node.id)}
+        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors ${
+          isSelected ? "bg-blue-100 text-blue-700" : "hover:bg-slate-100"
+        }`}
+      >
+        {node.tipo === "submenu" ? (
+          <button onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </button>
+        ) : (
+          <FileText size={16} className="text-slate-400" />
+        )}
+        <span className="text-sm font-medium truncate">{node.titulo}</span>
+      </div>
+
+      {isOpen && node.opciones && (
+        <div className="ml-4 border-l pl-2 mt-1">
+          {node.opciones.map((child: any) => (
+            <TreeItem
+              key={child.id}
+              node={child}
+              onSelect={onSelect}
+              selectedId={selectedId}
+            />
+          ))}
+          <button className="flex items-center gap-1 text-xs text-blue-500 mt-2 p-1 hover:bg-blue-50 rounded">
+            <Plus size={12} /> Añadir opción
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 const COLORS = [
   "blue",
   "green",

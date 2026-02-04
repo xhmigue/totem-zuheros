@@ -13,11 +13,11 @@ export const IMAGES = {
   GOBIERNO_ESPANA:
     "https://www.lamoncloa.gob.es/PublishingImages/LogoGobiernoEspana.jpg",
   JUNTA_ANDALUCIA:
-    "https://lajunta.es/assets/img/identidad/logo_junta_negro.png",
+    "https://imanesdeviaje.com/wp-content/uploads/2020/03/paisajes-mas-bonitos-del-mundo-polinesia-1.jpg",
   UNION_EUROPEA:
-    "https://zuheros.es/wp-content/uploads/2022/10/Logos-Fondos-Europeos.png",
+    "https://imanesdeviaje.com/wp-content/uploads/2020/03/paisajes-mas-bonitos-del-mundo-bahia-de-halong.jpg",
 
   // Icono Amarillo con Castillo (Imagen 6)
   ICONO_CASTILLO:
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz-XvR8uS0LzR2f7_XvE_M3fQ-T_u-K2_Q_g&s",
+    "https://imanesdeviaje.com/wp-content/uploads/2020/03/paisajes-mas-bonitos-del-mundo-cataratas-victoria.jpg",
 };

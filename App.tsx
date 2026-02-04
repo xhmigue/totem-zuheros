@@ -1,100 +1,91 @@
-import React, { useState, useEffect } from "react";
-import Header from "./components/Header";
-import SubHeader from "./components/SubHeader";
-import NavigationGrid from "./components/NavigationGrid";
-import DetailView from "./components/DetailView";
-import { NavigationNode, NavigationState } from "./types";
-import { ZUHEROS_DATA } from "./navigationData";
-import { JSONEditor } from "./AppEditor";
-
-const App: React.FC = () => {
-  const [navState, setNavState] = useState<NavigationState>({
-    currentNode: ZUHEROS_DATA,
-    history: [],
-  });
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleNodeSelect = (node: NavigationNode, title: string) => {
-    setNavState((prev) => ({
-      currentNode: node,
-      history: [...prev.history, prev.currentNode],
-    }));
-  };
-
-  const handleGoBack = () => {
-    if (navState.history.length === 0) return;
-
-    const newHistory = [...navState.history];
-    const previousNode = newHistory.pop()!;
-
-    setNavState({
-      currentNode: previousNode,
-      history: newHistory,
-    });
-  };
-
-  const handleGoHome = () => {
-    setNavState({
-      currentNode: ZUHEROS_DATA,
-      history: [],
-    });
-  };
-
-  const isHome = navState.history.length === 0;
-
+import React from "react";
+// Importa las herramientas de navegación
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { AppEditor } from "./AppEditor";
+import { AppPreview } from "./routes/AppPreview";
+import { DeviceWrapper } from "./components/DeviceWrapper";
+// --- COMPONENTE HOME ---
+const Home: React.FC = () => {
   return (
-    <div className="flex flex-col h-screen w-full bg-[#f8fafc] overflow-hidden font-sans">
-      <Header date={currentTime} />
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-50 gap-8">
+      <div className="text-center mb-8">
+        <h1 className="text-5xl font-black text-[#1c6c3e] mb-2 uppercase tracking-tighter">
+          Panel de Control Kiosco
+        </h1>
+        <p className="text-slate-500 text-xl">Selecciona el modo de trabajo</p>
+      </div>
 
-      <SubHeader
-        onBack={handleGoBack}
-        onHome={handleGoHome}
-        isHome={isHome}
-        title={navState.currentNode.titulo}
-      />
-
-      {navState.currentNode.tituloGeneral && (
-        <div className="bg-white border-b-4 border-green-100 px-10 py-6 flex justify-between items-center relative shadow-sm">
-          {/* Título Dinámico Centrado */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full max-w-[60%]">
-            <h2 className="text-[#1c6c3e] text-4xl font-black tracking-tighter uppercase truncate drop-shadow-sm">
-              {navState.currentNode.tituloGeneral}
-            </h2>
+      <div className="flex gap-10">
+        {/* Card Editor */}
+        <Link
+          to="/editor"
+          className="group w-80 p-8 bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all border-2 border-transparent hover:border-[#1c6c3e] text-center"
+        >
+          <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
+            📝
           </div>
-          <div className={`m-6`}></div>
-        </div>
-      )}
-      <main className="flex-1 overflow-y-auto p-12 custom-scrollbar">
-        {navState.currentNode.tipo === "submenu" ? (
-          <NavigationGrid
-            options={navState.currentNode.opciones || []}
-            onSelect={handleNodeSelect}
-          />
-        ) : (
-          <DetailView node={navState.currentNode} onBack={handleGoBack} />
-        )}
-      </main>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Editor JSON</h2>
+          <p className="text-gray-500">
+            Modifica el contenido, rutas y estructura de los datos.
+          </p>
+        </Link>
 
-      <footer className="h-6 bg-[#1c6c3e] shadow-[0_-4px_20px_rgba(0,0,0,0.1)]" />
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 12px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #1c6c3e;
-          border-radius: 6px;
-        }
-      `}</style>
+        {/* Card Preview */}
+        <Link
+          to="/preview-kiosk"
+          className="group w-80 p-8 bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all border-2 border-transparent hover:border-[#1c6c3e] text-center"
+        >
+          <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
+            🖥️
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Vista Previa del Kiosco
+          </h2>
+          <p className="text-gray-500">
+            Visualiza el kiosco tal como lo verán los usuarios.
+          </p>
+        </Link>
+      </div>
     </div>
+  );
+};
+
+// En tu sistema de rutas o App principal
+const KioskView = () => (
+  <DeviceWrapper targetWidth={2160} targetHeight={3840}>
+    <AppPreview forcedWidth={2160} forcedHeight={3840} />
+  </DeviceWrapper>
+);
+
+// Ejemplo de tu router
+// <Route path="/preview-kiosk" element={<KioskPreviewPage />} />
+// --- COMPONENTE PRINCIPAL CON RUTAS ---
+const App: React.FC = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/editor" element={<AppEditor />} />
+        <Route path="/preview-kiosk" element={<KioskView />} />
+        <Route
+          path="/video"
+          element={
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            >
+              <source
+                src="https://turismologrosan.com/wp-content/uploads/2023/06/Montaje_Logrosan_HD_Comp.mp4"
+                type="video/mp4"
+              />
+            </video>
+          }
+        />
+      </Routes>
+    </Router>
   );
 };
 
