@@ -1,4 +1,5 @@
 npm run build
+rm -rf /Users/xhmigue/apps/react/totem-zuheros-build
 cp -r dist/* /Users/xhmigue/apps/react/totem-zuheros-build
 cp .gitignore /Users/xhmigue/apps/react/totem-zuheros-build
 cp -r assets/images /Users/xhmigue/apps/react/totem-zuheros-build

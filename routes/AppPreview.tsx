@@ -1,125 +1,94 @@
 import React, { useState, useEffect } from "react";
-// ... Tus otros imports (Header, SubHeader, etc) ...
-import { ZUHEROS_DATA } from "../navigationData";
-import { NavigationNode, NavigationState } from "../types";
 import Header from "../components/Header";
 import SubHeader from "../components/SubHeader";
 import NavigationGrid from "../components/NavigationGrid";
 import DetailView from "../components/DetailView";
-function useScreenSize() {
-  // 2160px x 3840px
+import { DeviceWrapper } from "@/components/DeviceWrapper";
+import {
+  findNodeById,
+  findNodeByIdAndNameParent,
+  useZuherosStore,
+} from "@/store/kioskStore";
 
-  const [screenSize, setScreenSize] = useState({
-    width: window.innerWidth,
-
-    height: window.innerHeight,
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setScreenSize({
-        width: window.innerWidth,
-
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // Limpieza al desmontar el componente
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  return screenSize;
-}
-
+// En tu sistema de rutas o App principal
+export const AppPreview = ({
+  widthOverride,
+  zoom,
+}: {
+  widthOverride?: string;
+  zoom?: number;
+}) => (
+  <DeviceWrapper
+    targetWidth={2160}
+    targetHeight={3840}
+    widthOverride={widthOverride}
+    zoom={zoom}
+  >
+    <KioskPreview />
+  </DeviceWrapper>
+);
 // Modifica tu componente para recibir dimensiones opcionales
-export const AppPreview: React.FC<{
-  forcedWidth?: number;
-  forcedHeight?: number;
-}> = ({ forcedWidth, forcedHeight }) => {
-  const { width: realWidth, height: realHeight } = useScreenSize();
+export const KioskPreview: React.FC = () => {
+  // Suscribirse al store
+  const data = useZuherosStore((state) => state.data);
+  const idNodo = useZuherosStore((state) => state.idNodo);
+  const currentNodeId = useZuherosStore((state) => state.currentNodeId);
+  const historyIds = useZuherosStore((state) => state.historyIds);
+  const imagesUploader = useZuherosStore((state) => state.imagesUploader);
 
-  // Usamos las forzadas si existen, si no, las reales del navegador
-  const width = forcedWidth || realWidth;
-  const height = forcedHeight || realHeight;
-  const [navState, setNavState] = useState<NavigationState>({
-    currentNode: ZUHEROS_DATA,
-    history: [],
-  });
-  const [currentTime, setCurrentTime] = useState(new Date());
+  // Acciones
+  const navigate = useZuherosStore((state) => state.navigate);
+  const goBack = useZuherosStore((state) => state.goBack);
+  const goHome = useZuherosStore((state) => state.goHome);
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleNodeSelect = (node: NavigationNode, title: string) => {
-    setNavState((prev) => ({
-      currentNode: node,
-      history: [...prev.history, prev.currentNode],
-    }));
+  // Obtener el nodo actual reactivamente buscando en el árbol de data
+  // Cada vez que 'data' o 'currentNodeId' cambien, esto se recalcula
+  const { node, nameParent } = findNodeByIdAndNameParent(
+    data,
+    currentNodeId,
+    "",
+  ) || {
+    node: data,
+    nameParent: "",
   };
-
-  const handleGoBack = () => {
-    if (navState.history.length === 0) return;
-
-    const newHistory = [...navState.history];
-    const previousNode = newHistory.pop()!;
-
-    setNavState({
-      currentNode: previousNode,
-      history: newHistory,
-    });
-  };
-
-  const handleGoHome = () => {
-    setNavState({
-      currentNode: ZUHEROS_DATA,
-      history: [],
-    });
-  };
-
-  const isHome = navState.history.length === 0;
-
+  const isHome = historyIds.length === 0;
   return (
     <div
-      className="flex flex-col h-screen w-full bg-[#f8fafc] overflow-hidden font-sans"
+      className="flex flex-col w-full bg-[#f8fafc] overflow-hidden font-sans"
       style={{ height: "100%" }}
     >
-      <Header date={currentTime} />
-
+      <Header />
       <SubHeader
-        onBack={handleGoBack}
-        onHome={handleGoHome}
+        onBack={goBack}
+        onHome={goHome}
         isHome={isHome}
-        title={
-          navState.currentNode.tituloGeneral ?? navState.currentNode.titulo
-        }
+        title={node.tipo === "text" ? nameParent : node.titulo}
       />
-
-      {navState.currentNode.tituloGeneral && (
+      {node.tipo === "text" ? (
         <div className="bg-white border-b-4 border-green-100 px-10 py-6 flex justify-between items-center relative shadow-sm">
           {/* Título Dinámico Centrado */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full">
             <h2 className="text-[#1c6c3e] text-5xl font-black tracking-tighter uppercase truncate drop-shadow-sm">
-              {navState.currentNode.titulo}
+              {node.titulo}
             </h2>
           </div>
           <div className={`m-6`}></div>
         </div>
+      ) : (
+        ""
       )}
       <main className="relative flex-1 overflow-y-auto custom-scrollbar">
         {/* CONTENIDO (Z-10 para estar sobre el video) */}
         <div className="relative z-10 p-10" style={{ height: "3055px" }}>
-          {navState.currentNode.tipo === "submenu" ? (
+          {node.tipo === "submenu" ? (
             <NavigationGrid
-              options={navState.currentNode.opciones || []}
-              onSelect={handleNodeSelect}
+              options={node.opciones || []}
+              onSelect={(node) => navigate(node.id)} // Usamos el ID para navegar
+              idNodo={idNodo}
+              imagesUploader={imagesUploader}
             />
           ) : (
-            <DetailView node={navState.currentNode} onBack={handleGoBack} />
+            <DetailView node={node} onBack={goBack} />
           )}
         </div>
       </main>

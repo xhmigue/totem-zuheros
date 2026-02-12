@@ -14,7 +14,10 @@ const SubHeader: React.FC<SubHeaderProps> = ({
   title,
 }) => {
   return (
-    <div className="bg-white border-b-4 border-green-100 px-4 py-6 flex justify-between items-center relative">
+    <div
+      className="bg-white border-b-4 border-green-100 px-4 py-6 flex justify-between items-center relative"
+      style={{ height: `175px` }}
+    >
       {/* Botón Volver */}
       <button
         onClick={onBack}

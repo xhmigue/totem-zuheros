@@ -1,14 +1,19 @@
 import React from "react";
 import { NavigationNode } from "../types";
+import { ImageUploderModel } from "@/store/kioskStore";
 
 interface NavigationGridProps {
   options: NavigationNode[];
   onSelect: (node: NavigationNode, title: string) => void;
+  idNodo: string;
+  imagesUploader: ImageUploderModel[];
 }
 
 const NavigationGrid: React.FC<NavigationGridProps> = ({
   options,
   onSelect,
+  idNodo,
+  imagesUploader,
 }) => {
   return (
     <>
@@ -26,23 +31,23 @@ const NavigationGrid: React.FC<NavigationGridProps> = ({
           style={{ height: "100%" }}
         >
           <source
-            src="assets/videos/DJI_20250401173132_0029_D.MP4"
+            src="assets/videos/DJI_20250401173132_0029_D_Talle_Vertical.mp4"
             type="video/mp4"
           />
         </video>
       </div>
-      <div className="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-14 p-10">
+      <div className="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 ">
         {options.map((option) => (
           <button
             key={option.id}
             onClick={() => onSelect(option, option.titulo)}
-            className="group relative bg-white rounded-[3rem] p-12 flex flex-col items-center justify-center min-h-[420px] active:scale-95 transition-all duration-300 border-b-8 border border-[#34c371] overflow-hidden"
+            className="group relative bg-white rounded-[3rem] p-10 flex flex-col items-center justify-center min-h-[420px] active:scale-95 transition-all duration-300 border-b-8 border border-[#34c371] overflow-hidden"
           >
             {/* Logo/Imagen del botón */}
-            <div className="w-full h-[500px] rounded-[2rem] bg-gray-50 flex items-center justify-center mb-8 overflow-hidden shadow-inner border border-gray-100 group-hover:scale-105 transition-transform">
-              {getLogo(option.logo, option.tipoLogo, option.titulo)}
+            <div className="w-full h-[455px] rounded-[2rem] bg-gray-50 flex items-center justify-center mb-8 overflow-hidden shadow-inner border border-gray-100 ">
+              {getLogo(option, idNodo, imagesUploader)}
             </div>
-            <div className="w-full h-[150px] flex items-center justify-center">
+            <div className="w-full h-[140px] flex items-center justify-center">
               <span className="text-6xl font-black text-[#1c6c3e] uppercase text-center leading-tight drop-shadow-sm group-hover:text-[#1c6c3e]/80">
                 {option.titulo}
               </span>
@@ -58,11 +63,11 @@ const NavigationGrid: React.FC<NavigationGridProps> = ({
 };
 
 const getLogo = (
-  logo: string,
-  tipoLogo: "image" | "icon" | "video" | "url",
-  titulo: string,
+  option: NavigationNode,
+  idNodo: string,
+  imagesUploader: ImageUploderModel[],
 ) => {
-  if (tipoLogo === "video") {
+  if (option.tipoLogo === "video") {
     return (
       <video
         autoPlay
@@ -72,16 +77,21 @@ const getLogo = (
         className="w-full h-full object-cover"
       >
         <source
-          src="assets/videos/DJI_20250401173132_0029_D.MP4"
+          src="assets/videos/DJI_20250401173132_0029_D_Talle_Vertical.mp4"
           type="video/mp4"
         />
       </video>
     );
-  } else if (tipoLogo === "image" || tipoLogo === "url") {
+  } else if (option.tipoLogo === "image") {
+    const findImagen = imagesUploader.find((item) => item.tempId === option.id);
     return (
       <img
-        src={tipoLogo === "url" ? logo : `assets/images/${logo}`}
-        alt={titulo}
+        src={
+          findImagen
+            ? URL.createObjectURL(findImagen.blob)
+            : `assets/images/${idNodo}/${option.imagen}`
+        }
+        alt={option.titulo}
         className="w-full h-full object-cover"
         onError={(e) => {
           (e.target as HTMLImageElement).src =

@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
+import Header from "./Header";
+import KioskPlayer from "./KioskPlayer";
 
 interface DeviceWrapperProps {
   children: React.ReactNode;
   targetWidth: number;
   targetHeight: number;
+  widthOverride?: string;
+  zoom?: number;
 }
 
 function useScreenSize() {
@@ -27,8 +31,10 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
   children,
   targetWidth,
   targetHeight,
+  widthOverride,
+  zoom: zoomProp,
 }) => {
-  const [zoom, setZoom] = useState(0.55);
+  const [zoom, setZoom] = useState(zoomProp || 0.55);
   const [isIdle, setIsIdle] = useState(false); // Estado del protector
   const { width, height } = useScreenSize();
 
@@ -83,7 +89,23 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
           onClick={resetTimer} // Al hacer clic, desaparece
           style={{ height: `${targetHeight}px` }}
         >
-          <video
+          <div className="font-sans">
+            <Header />
+            {/* SubHeader */}
+            <div
+              className="bg-white border-b-4 border-green-100 px-4 py-6 flex justify-between items-center relative"
+              style={{ height: `175px` }}
+            >
+              {/* Título Dinámico Centrado */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full max-w-[60%]">
+                <h2 className="text-[#1c6c3e] text-7xl font-black tracking-tighter uppercase truncate drop-shadow-sm animate-pulse tracking-tighter">
+                  Toca para Continuar
+                </h2>
+              </div>
+            </div>
+          </div>
+          <KioskPlayer src={"http://localhost:8000/assets/playlist.m3u8"} />
+          {/* <video
             autoPlay
             loop
             muted
@@ -91,16 +113,10 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
             className="w-full h-full object-cover"
           >
             <source
-              src="assets/videos/DJI_20250401173132_0029_D.MP4"
+              src="assets/videos/DJI_20250401173132_0029_D_Talle_Vertical.mp4"
               type="video/mp4"
             />
-          </video>
-          {/* Texto opcional para invitar a tocar */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-            <p className="text-white text-8xl font-bold animate-pulse uppercase tracking-tighter">
-              Toca para comenzar
-            </p>
-          </div>
+          </video> */}
         </div>
       )}
 
@@ -116,11 +132,13 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
 
   // Si estamos en modo Preview (Editor/Laptop)
   return (
-    <div className="flex flex-col h-screen bg-zinc-900 overflow-hidden">
+    <div
+      className={`flex flex-col h-screen bg-zinc-900 overflow-hidden ${widthOverride ?? ""}`}
+    >
       <div className="h-14 bg-black border-b border-zinc-700 flex items-center justify-between px-6 z-50 shadow-xl">
         <div className="flex items-center gap-4">
           <span className="text-zinc-400 text-xs font-mono uppercase tracking-widest">
-            Preview Mode
+            Previsualización
           </span>
           <div className="h-4 w-[1px] bg-zinc-700"></div>
           <span className="text-white font-bold">

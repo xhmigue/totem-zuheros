@@ -1,9 +1,12 @@
 import React from "react";
 // Importa las herramientas de navegación
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { AppEditor } from "./AppEditor";
+import { AppEditor } from "./routes/AppEditor";
 import { AppPreview } from "./routes/AppPreview";
 import { DeviceWrapper } from "./components/DeviceWrapper";
+import AppStatsPanel from "./routes/AppStatsPanel";
+import KioskPlayer from "./components/KioskPlayer";
+
 // --- COMPONENTE HOME ---
 const Home: React.FC = () => {
   return (
@@ -50,38 +53,23 @@ const Home: React.FC = () => {
   );
 };
 
-// En tu sistema de rutas o App principal
-const KioskView = () => (
-  <DeviceWrapper targetWidth={2160} targetHeight={3840}>
-    <AppPreview forcedWidth={2160} forcedHeight={3840} />
-  </DeviceWrapper>
-);
-
 // Ejemplo de tu router
 // <Route path="/preview-kiosk" element={<KioskPreviewPage />} />
 // --- COMPONENTE PRINCIPAL CON RUTAS ---
 const App: React.FC = () => {
   return (
-    <Router>
+    <Router basename="/views/pages/totem_react">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/editor" element={<AppEditor />} />
-        <Route path="/preview-kiosk" element={<KioskView />} />
+        <Route path="/stats" element={<AppStatsPanel />} />
+        <Route path="/preview-kiosk" element={<AppPreview />} />
         <Route
           path="/video"
           element={
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            >
-              <source
-                src="https://turismologrosan.com/wp-content/uploads/2023/06/Montaje_Logrosan_HD_Comp.mp4"
-                type="video/mp4"
-              />
-            </video>
+            <KioskPlayer
+              src={"http://localhost:3000/documents_access/playlist.m3u8"}
+            />
           }
         />
       </Routes>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { IMAGES } from "../assets";
 import FlexLayout from "./GlobalComponents";
 import WeatherWidget from "./WeatherWidget";
@@ -10,7 +10,14 @@ interface HeaderProps {
 const urlPanel = process.env.PROD
   ? "https://zuheros.es"
   : "https://panel.modularbox.com";
-const Header: React.FC<HeaderProps> = ({ date }) => {
+const Header: React.FC<HeaderProps> = () => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const formatDate = (d: Date) => {
     const days = [
       "domingo",
@@ -30,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({ date }) => {
     return { dayName, fullDate: `${day}-${month}-${year}`, time };
   };
 
-  const { dayName, fullDate, time } = formatDate(date);
+  const { dayName, fullDate, time } = formatDate(currentTime);
 
   return (
     <header className="flex flex-col w-full z-30">
