@@ -9,7 +9,7 @@ app.use(cors());
 
 // Servir la carpeta donde tienes los videos y la playlist (.m3u8 y .ts)
 // Asegúrate de que la ruta sea correcta
-app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 app.listen(8000, () => {
   console.log("Servidor de video corriendo en http://localhost:8000");
