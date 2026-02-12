@@ -24,7 +24,7 @@ function createWindow() {
   app.commandLine.appendSwitch("use-gl", "desktop");
 
   // Carga tu app de React (ajusta la ruta si ya hiciste npm run build)
-  win.loadURL("http://localhost:8080");
+  win.loadURL("http://localhost:8080/preview-kiosk");
 }
 
 app.whenReady().then(createWindow);
