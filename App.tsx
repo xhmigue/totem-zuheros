@@ -21,7 +21,7 @@ const Home: React.FC = () => {
       <div className="flex gap-10">
         {/* Card Editor */}
         <Link
-          to="/editor/138"
+          to="/editor/2"
           className="group w-80 p-8 bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all border-2 border-transparent hover:border-[#1c6c3e] text-center"
         >
           <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
