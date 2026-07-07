@@ -13,7 +13,6 @@ export interface NavigationNode {
   tipo: NodeType;
   titulo: string;
   tituloGeneral?: string;
-  logo: string; // Puede ser una URL de imagen o un identificador de icono
   tipoLogo?: "image" | "icon" | "video" | "url";
   descripcion?: string;
   opciones?: NavigationNode[];

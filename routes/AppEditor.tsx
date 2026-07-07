@@ -19,8 +19,11 @@ import {
 import { ImageUploader } from "@/components/ImageUploader";
 import { AppPreview } from "./AppPreview";
 import CarouselEditor from "@/components/CarouselEditor";
+import { useParams } from "react-router-dom";
+import terminal from "virtual:terminal";
 const ISJSONEDITOR = false;
 export const AppEditor = () => {
+  const params = useParams<{ idNodo: string }>();
   // 1. TODOS los hooks de Zustand primero
   const data = useZuherosStore((state) => state.data);
   const saveData = useZuherosStore((state) => state.saveData);
@@ -32,11 +35,12 @@ export const AppEditor = () => {
   const deleteNode = useZuherosStore((state) => state.deleteNode);
 
   // 2. El hook de estado local TAMBIÉN debe ir aquí arriba
-  const [selectedNodeId, setSelectedNodeId] = useState<string>("root");
+  const selectedNodeId = useZuherosStore((state) => state.selectedNodeId);
+  const setSelectedNodeId = useZuherosStore((state) => state.setSelectedNodeId);
 
   // 3. useEffect también aquí
   useEffect(() => {
-    fetchData();
+    fetchData(params.idNodo);
   }, [fetchData]);
 
   // 4. AHORA SÍ, después de todos los hooks, puedes poner el IF
@@ -65,8 +69,12 @@ export const AppEditor = () => {
     return nodes;
   };
 
-  const handleFieldChange = (field: keyof NavigationNode, value: any) => {
-    const updated = updateNode(data, selectedNodeId, { [field]: value });
+  const handleFieldChange = (
+    field: keyof NavigationNode,
+    value: any,
+    nodeId: string,
+  ) => {
+    const updated = updateNode(data, nodeId, { [field]: value });
     useZuherosStore.setState({ data: updated });
   };
 
@@ -126,24 +134,25 @@ export const AppEditor = () => {
       {/* MAIN: Formulario de Edición */}
       <main className="flex-1 overflow-y-auto p-8">
         {activeNode && (
-          <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm border">
-            <header className="mb-6 border-b pb-4">
-              <span className="text-xs font-bold uppercase text-blue-600 tracking-wider block">
-                Editando: {activeNode.tipo}
-              </span>
-              <h1 className="text-2xl font-bold">{activeNode.titulo}</h1>
-            </header>
+          <div className="max-w-2xl mx-auto bg-white p-4 rounded-xl shadow-sm border mb-4">
+            <span className="text-xs font-bold uppercase text-blue-600 tracking-wider block">
+              Editando: {activeNode.tipo}
+            </span>
+            <h1 className="text-2xl font-bold">{activeNode.titulo}</h1>
             <div className="space-y-6">
-              {/* Inputs Básicos */}
-              <FormField
-                label="ID del Nodo (URL)"
-                value={activeNode.id}
-                disabled
-              />
+              {/* {process.env.TEST === "1" && (
+                <FormField
+                  label="ID del Nodo (URL)"
+                  value={activeNode.id}
+                  disabled
+                />
+              )}
               <FormField
                 label="Título del Menú"
                 value={activeNode.titulo}
-                onChange={(e) => handleFieldChange("titulo", e.target.value)}
+                onChange={(e) =>
+                  handleFieldChange("titulo", e.target.value, selectedNodeId)
+                }
               />
               <SelectField
                 label="Tipo de Logo"
@@ -152,13 +161,14 @@ export const AppEditor = () => {
                   { value: "image", label: "Imagen" },
                   { value: "video", label: "Video" },
                 ]}
-                onChange={(e) => handleFieldChange("tipoLogo", e.target.value)}
+                onChange={(e) =>
+                  handleFieldChange("tipoLogo", e.target.value, selectedNodeId)
+                }
               />
               <ImageUploader
-                userId={activeNode.id}
+                nodeId={activeNode.id}
                 imageNode={activeNode.imagen}
-              />
-              {/* Editor de Cards si es tipo text */}
+              /> */}
               {activeNode.tipo === "text" && (
                 <div className="mt-8">
                   <h3 className="font-bold border-t pt-4 mb-4">
@@ -167,13 +177,110 @@ export const AppEditor = () => {
                   <CardBuilder
                     nodeId={activeNode.id}
                     cards={activeNode.card || []}
-                    onChange={(newCards) => handleFieldChange("card", newCards)}
+                    onChange={(newCards) =>
+                      handleFieldChange("card", newCards, selectedNodeId)
+                    }
                   />
                 </div>
               )}
             </div>
           </div>
         )}
+        {activeNode &&
+          Object.values(activeNode.opciones || {}).map((option) => (
+            <div key={option.id} className="relative overflow-hidden pb-2">
+              {/* Capa de Video de Fondo (Igual que en el NavigationGrid) */}
+              {/* <div
+                className="absolute inset-0 -z-10 overflow-hidden"
+                style={{ height: "100%" }}
+              >
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                >
+                  <source
+                    src="assets/videos/DJI_20250401173132_0029_D_Talle_Vertical.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </div> */}
+
+              {/* ==========================================
+                  DISEÑO FIEL DE LA CARTA / BOTÓN EN EL PANEL
+                ========================================== */}
+              <div className="w-full max-w-lg mx-auto bg-white rounded-[3rem] p-5 flex flex-col items-center justify-center border-b-4 border border-[#34c371] overflow-hidden shadow-2xl relative">
+                {process.env.TEST === "1" && (
+                  <span className="text-[10px] font-mono text-slate-400">
+                    ID oculto: {option.id}
+                  </span>
+                )}
+
+                <ImageUploader
+                  nodeId={option.id}
+                  imageNode={option.imagen}
+                  handleFieldChange={handleFieldChange}
+                />
+
+                <div className="w-fullflex flex-col items-center justify-center">
+                  <input
+                    type="text"
+                    value={option.titulo}
+                    onChange={(e) =>
+                      handleFieldChange("titulo", e.target.value, option.id)
+                    }
+                    className="w-full py-2 bg-transparent text-center text-1xl font-black text-[#1c6c3e] uppercase leading-tight drop-shadow-sm focus:outline-none focus:ring-4 focus:ring-[#34c371]/20 rounded-2xl border-2 border-gray-200 focus:border-[#34c371] hover:border-[#34c371] px-2 py-1 transition-all"
+                    placeholder="AÑADIR TÍTULO..."
+                  />
+                  <span className="text-[12px] font-bold uppercase tracking-widest mt-1 opacity-50">
+                    Haz click arriba para renombrar
+                  </span>
+                  {process.env.TEST === "0" && (
+                    <button
+                      className="w-full py-2 bg-red-500 text-white rounded-2xl px-2 py-1 transition-all"
+                      onClick={() =>
+                        handleFieldChange("imagen", undefined, option.id)
+                      }
+                    >
+                      Eliminar
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* SELECTOR ADICIONAL DE TIPO DE LOGO (Mantenido abajo del diseño por si lo necesitas) */}
+              {/* <div className="max-w-lg mx-auto bg-white/95 backdrop-blur-sm p-5 rounded-2xl shadow-md border border-slate-100 mt-4 space-y-4">
+                <SelectField
+                  label="Tipo de Logo"
+                  value={"image"}
+                  options={[
+                    { value: "image", label: "Imagen" },
+                    { value: "video", label: "Video" },
+                  ]}
+                  onChange={(e) =>
+                    handleFieldChange("tipoLogo", e.target.value)
+                  }
+                />
+
+                {option.tipo === "text" && (
+                  <div className="mt-4 pt-4 border-t border-slate-100">
+                    <h3 className="font-black text-slate-700 uppercase tracking-wider text-xs mb-3">
+                      Bloques de Contenido (Cards)
+                    </h3>
+                    <CardBuilder
+                      nodeId={option.id}
+                      cards={option.card || []}
+                      onChange={(newCards) =>
+                        handleFieldChange("card", newCards)
+                      }
+                    />
+                  </div>
+                )}
+              </div> */}
+            </div>
+          ))}
 
         {selectedNodeId === "screen-projector" && (
           <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm border">
@@ -185,16 +292,16 @@ export const AppEditor = () => {
             </header>
             <div className="space-y-6">
               {/* Inputs Básicos */}
-              <FormField
+              {/* <FormField
                 label="ID del Nodo (URL)"
                 value={"screen-projector"}
                 disabled
-              />
-              <FormField
+              /> */}
+              {/* <FormField
                 label="Título del Menú"
                 value="Projector de Pantalla"
                 onChange={(e) => handleFieldChange("titulo", e.target.value)}
-              />
+              /> */}
               <CarouselEditor />
             </div>
           </div>
@@ -234,6 +341,7 @@ const FormField = ({ label, value, onChange, disabled = false }: any) => (
     <input
       type="text"
       disabled={disabled}
+      maxLength={34}
       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-slate-50"
       value={value}
       onChange={onChange}
@@ -346,12 +454,10 @@ const TreeItem = ({
         }`}
       >
         <div className="flex items-center justify-between">
-          {node.tipo === "submenu" ? (
+          {node.tipo === "submenu" && (
             <button onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             </button>
-          ) : (
-            <FileText size={16} className="text-slate-400" />
           )}
           {!isInit && (
             <>
@@ -360,6 +466,7 @@ const TreeItem = ({
                   deleteNode(node.id, isSubSubMenu ? "información" : "opción")
                 }
                 className="p-1 rounded hover:bg-red-100 text-red-600"
+                title="Eliminar elemento"
               >
                 <Trash2 size={16} />
               </button>
@@ -382,7 +489,7 @@ const TreeItem = ({
                 <button
                   onClick={() => copyOption(parentId, index)}
                   className={`p-1 rounded ${hoverButtons} text-blue-600 transition-colors`}
-                  title="Copiar elemento"
+                  title="Copiar Opción"
                 >
                   <Copy size={16} />
                 </button>
@@ -424,7 +531,6 @@ const TreeItem = ({
                       titulo: "Nueva Opción",
                       descripcion: "",
                       tipoLogo: "image",
-                      logo: "",
                     })
                   : addOptionToNode(node.id, {
                       id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
@@ -432,7 +538,6 @@ const TreeItem = ({
                       titulo: "Nueva Opción",
                       descripcion: "",
                       tipoLogo: "image",
-                      logo: "",
                       opciones: [],
                     })
               }
@@ -466,7 +571,7 @@ const ScreenProjector = ({ node, onSelect, selectedId }: any) => {
         ) : (
           <FileText size={16} className="text-slate-400" />
         )}
-        <span className="text-sm font-medium truncate">{node.titulo} dsss</span>
+        <span className="text-sm font-medium truncate">{node.titulo}</span>
       </div>
     </div>
   );
@@ -545,7 +650,7 @@ const CardBuilder = ({
             onClick={() => addBlock("text-p-relaxed")}
             className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-blue-50 hover:border-blue-200 transition-colors"
           >
-            <Plus size={14} className="text-blue-500" /> Párrafo Relaxed
+            <Plus size={14} className="text-blue-500" /> Anotaciones
           </button>
         </div>
         {/* Fila de Tablas */}
@@ -573,7 +678,14 @@ const CardBuilder = ({
     </div>
   );
 };
-
+const titles = {
+  "text-h2": "Encabezado Grande",
+  "text-h3": "Encabezado Pequeño",
+  "text-p": "Párrafo",
+  "text-p-relaxed": "Anotaciones",
+  "table-schedules": "Tabla Horarios",
+  "table-rates": "Tabla Tarifas",
+};
 // ... (Tus interfaces CardElement y COLORS deben estar definidas arriba)
 const DetailCard: React.FC<{
   cards: CardElement[];
@@ -613,12 +725,14 @@ const DetailCard: React.FC<{
               <button
                 onClick={() => moveCard(nodeId, idx, "up")}
                 className="p-2 text-slate-500 hover:text-slate-900 hover:bg-white bg-transparent border border-slate-200 hover:border-slate-300 rounded-lg transition-all shadow-sm"
+                title="Mover arriba"
               >
                 <ChevronUp size={16} />
               </button>
               <button
                 onClick={() => moveCard(nodeId, idx, "down")}
                 className="p-2 text-slate-500 hover:text-slate-900 hover:bg-white bg-transparent border border-slate-200 hover:border-slate-300 rounded-lg transition-all shadow-sm"
+                title="Mover abajo"
               >
                 <ChevronDown size={16} />
               </button>
@@ -684,7 +798,7 @@ const DetailCard: React.FC<{
                       : "bg-blue-100 text-blue-700"
                   }`}
                 >
-                  {card.tipo.replace("text-", "").replace("table-", "Tabla ")}
+                  {titles[card.tipo]}
                 </span>
               </div>
             </div>
@@ -697,7 +811,7 @@ const DetailCard: React.FC<{
                   : "Encabezado"}
               </label>
               <textarea
-                className={`w-full p-3 bg-slate-50 border border-transparent focus:border-blue-200 focus:bg-white rounded-lg transition-all outline-none resize-none ${
+                className={`w-full h-[150px] p-3 bg-slate-50 border border-transparent focus:border-blue-200 focus:bg-white rounded-lg transition-all outline-none resize-none ${
                   card.tipo === "text-h2"
                     ? "text-xl font-semibold text-slate-800"
                     : "text-sm text-slate-600"
@@ -740,6 +854,7 @@ const DetailCard: React.FC<{
                     {card.contenido?.columnas.map((col, cIdx) => (
                       <input
                         key={cIdx}
+                        maxLength={200}
                         className="bg-transparent text-[11px] p-2 text-center font-bold text-slate-600 focus:bg-white outline-none border-r border-slate-100 last:border-r-0"
                         value={col}
                         onChange={(e) => {
@@ -764,6 +879,7 @@ const DetailCard: React.FC<{
                       {(["fila1", "fila2", "fila3"] as const).map((fKey) => (
                         <input
                           key={fKey}
+                          maxLength={200}
                           className="text-[11px] p-2 text-center text-slate-500 focus:bg-blue-50 outline-none border-r border-slate-100 last:border-r-0 transition-colors"
                           value={fila[fKey]}
                           onChange={(e) => {

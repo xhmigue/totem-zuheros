@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Header from "../components/Header";
 import SubHeader from "../components/SubHeader";
 import NavigationGrid from "../components/NavigationGrid";
 import DetailView from "../components/DetailView";
 import { DeviceWrapper } from "@/components/DeviceWrapper";
-import {
-  findNodeById,
-  findNodeByIdAndNameParent,
-  useZuherosStore,
-} from "@/store/kioskStore";
+import { findNodeByIdAndNameParent, useZuherosStore } from "@/store/kioskStore";
 
 // En tu sistema de rutas o App principal
 export const AppPreview = ({
@@ -34,7 +30,6 @@ export const KioskPreview: React.FC = () => {
   const idNodo = useZuherosStore((state) => state.idNodo);
   const currentNodeId = useZuherosStore((state) => state.currentNodeId);
   const historyIds = useZuherosStore((state) => state.historyIds);
-  const imagesUploader = useZuherosStore((state) => state.imagesUploader);
 
   // Acciones
   const navigate = useZuherosStore((state) => state.navigate);
@@ -85,7 +80,6 @@ export const KioskPreview: React.FC = () => {
               options={node.opciones || []}
               onSelect={(node) => navigate(node.id)} // Usamos el ID para navegar
               idNodo={idNodo}
-              imagesUploader={imagesUploader}
             />
           ) : (
             <DetailView node={node} onBack={goBack} />

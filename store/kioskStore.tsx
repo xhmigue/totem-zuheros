@@ -2,18 +2,38 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { NavigationNode, CardElement } from "../types"; // Tus interfaces
 import PocketBase from "pocketbase";
+// Datos iniciales (tu JSON gigante)
+import { ZUHEROS_DATA } from "../navigationData";
+import Swal from "sweetalert2";
+import terminal from "virtual:terminal";
 export interface ImageUploderModel {
   tempId: string;
   blob: Blob;
 }
 
+interface MediaItem {
+  id: string;
+  type: "image" | "video";
+  name: string;
+  url: string;
+  position: "left" | "center" | "right";
+  duration: number; // 0 para videos significa "reproducir completo"
+}
 interface ZuherosState {
+  selectedNodeId: string;
+  setSelectedNodeId: (nodeId: string) => void;
+  recordId: string;
   idNodo: string;
   data: NavigationNode;
   imagesUploader: ImageUploderModel[];
   isLoading: boolean;
   isSaving: boolean;
-  fetchData: () => Promise<void>;
+  isPreview: boolean;
+  setIsPreview: (isPreview: boolean) => void;
+  secondsPreview: number;
+  items: MediaItem[];
+  setItems: (items: MediaItem[]) => void;
+  fetchData: (idNodo: string) => Promise<void>;
   saveData: () => Promise<void>;
   // --- NUEVO ESTADO DE NAVEGACIÓN ---
   currentNodeId: string; // Guardamos el ID en lugar del objeto completo
@@ -52,82 +72,133 @@ interface ZuherosState {
   addImageUploader: (img: ImageUploderModel) => void;
 }
 
-// Datos iniciales (tu JSON gigante)
-import { ZUHEROS_DATA } from "../navigationData";
-import Swal from "sweetalert2";
-import { uploadx } from "@/utils/utils";
-
 export const useZuherosStore = create<ZuherosState>()(
   immer((set, get) => ({
+    selectedNodeId: "root",
+    setSelectedNodeId: (nodeId: string) => {
+      set({ selectedNodeId: nodeId });
+      get().navigate(nodeId);
+    },
+    recordId: "",
     idNodo: "50",
     data: ZUHEROS_DATA, // Estado inicial (Local por defecto)
     imagesUploader: [],
     isLoading: false,
     isSaving: false,
+    /* Protector de pantalla */
+    isPreview: false,
+    setIsPreview: (isPreview: boolean) => set({ isPreview }),
+    secondsPreview: 30,
+    items: [],
+    setItems: (items: MediaItem[]) => set({ items }),
 
-    fetchData: async () => {
-      set({ isLoading: true });
+    fetchData: async (idNodo: string) => {
+      set({
+        isLoading: true,
+        idNodo: idNodo || "50",
+      });
       try {
         const pb = new PocketBase("https://pruebas.modularbox.com");
-        const record = await pb.collection("totem").getOne("yo93kp2mw48a2d9", {
-          fields: `id, data`,
-        });
+        const record = await pb
+          .collection("totem")
+          .getFirstListItem(`idNodo = ${idNodo}`, {
+            fields: `id, data`,
+          });
 
         if (record && record.data) {
+          terminal.log(record.id);
           // Si hay internet y datos, actualizamos el estado global
-          set({ data: record.data as NavigationNode });
+          set({ recordId: record.id, data: record.data as NavigationNode });
         }
       } catch (err) {
-        console.error("PocketBase offline o error, usando datos locales:", err);
+        terminal.log("PocketBase offline o error, usando datos locales:", err);
         // No hacemos nada, 'data' ya tiene ZUHEROS_DATA por defecto
       } finally {
         set({ isLoading: false });
       }
-    },
+    }, // --- AQUÍ ESTÁ TU SAVE DATA TOTALMENTE ADAPTADO ---
     saveData: async () => {
-      const { data, imagesUploader, idNodo } = get(); // Obtenemos la data actual del store
+      const { data, imagesUploader, recordId } = get();
+      if (!recordId) {
+        Swal.fire(
+          "Error",
+          "No hay un ID de registro activo para guardar.",
+          "error",
+        );
+        return;
+      }
       set({ isSaving: true });
-
+      terminal.log(`ImagenesUploader ${imagesUploader.length}`);
       try {
-        /* Subir imagenes */
-        const formData = new FormData();
-        formData.append("idNodo", idNodo);
-        formData.append(
-          "items",
-          JSON.stringify(imagesUploader.map(({ tempId }) => ({ tempId }))),
-        );
-        for (const img of imagesUploader) {
-          // IMPORTANTE: La key debe coincidir con el tempId para identificarla en PHP
-          formData.append("file_" + img.tempId, img.blob, img.tempId);
-        }
-        const response = await uploadx(
-          "upload-panel/save-image-totem",
-          formData,
-        );
-        if (response === null) return;
-        set({ imagesUploader: [] });
         const pb = new PocketBase("https://pruebas.modularbox.com");
+        // Clonamos el JSON de datos actual para actualizar las referencias antes de enviarlo
+        const finalData = JSON.parse(JSON.stringify(data));
 
-        // El ID es el que ya tenías en tu fetchData
-        const recordId = "yo93kp2mw48a2d9";
+        // 1. Procesamos las imágenes de la cola una a una en la nueva tabla
+        if (imagesUploader.length > 0) {
+          for (const img of imagesUploader) {
+            try {
+              const formData = new FormData();
 
-        // Actualizamos PocketBase enviando el objeto data completo
+              // Mandamos el archivo usando el nombre de campo "archive" en inglés
+              formData.append("archive", img.blob, `${img.tempId}.png`);
+
+              // Enviamos el archive a PocketBase
+              const imgRecord = await pb
+                .collection("imagenes_totem")
+                .create(formData);
+
+              // Si se sube bien, buscamos el nodo y actualizamos su propiedad con el ID real
+              const targetNode = findNodeById(finalData, img.tempId);
+              if (targetNode) {
+                targetNode.imagen = imgRecord.id;
+              }
+            } catch (uploadErr: any) {
+              // --- CAPTURA DE ERRORES DE POCKETBASE ---
+              terminal.log(
+                "❌ Fallo detallado al subir la imagen a PocketBase:",
+                uploadErr,
+              );
+
+              // Si PocketBase responde con datos de error del servidor, los exponemos aquí:
+              if (uploadErr.data) {
+                terminal.log(
+                  "Datos de respuesta del servidor:",
+                  uploadErr.data,
+                );
+              }
+
+              // Lanzamos el error hacia afuera para que frene la ejecución y salte el Swal.fire de error general
+              throw new Error(
+                `Error en imagen ${img.tempId}: ${uploadErr.message || uploadErr}`,
+              );
+            }
+          }
+        }
+
+        // 2. Guardamos el registro del Tótem con el JSON completamente actualizado
         await pb.collection("totem").update(recordId, {
-          data: data, // Asegúrate de que el campo en PocketBase se llame 'data' (tipo JSON)
+          data: finalData,
+        });
+
+        // 3. Sincronizamos el estado local de Zustand con el JSON final y vaciamos la cola
+        set({
+          data: finalData,
+          imagesUploader: [],
         });
 
         Swal.fire({
-          title: "¡Publicado!",
-          text: "Los cambios se han guardado en el servidor correctamente.",
+          title: "Guardado",
+          text: "Todo se a guardado correctamente.",
           icon: "success",
           timer: 2000,
           showConfirmButton: false,
         });
       } catch (err) {
-        console.error("Error al guardar en PocketBase:", err);
+        terminal.log("Error al guardar en PocketBase:", err);
         Swal.fire(
           "Error",
-          "No se pudieron guardar los cambios: " + err,
+          `No se pudieron guardar los cambios, intentalo mas tarde.`,
           "error",
         );
       } finally {
@@ -139,7 +210,11 @@ export const useZuherosStore = create<ZuherosState>()(
       set((state) => {
         const node = findNodeById(state.data, id);
         if (node) {
-          Object.assign(node, updates);
+          // En lugar de Object.assign, iteramos sobre las llaves para que el Proxy de Immer
+          // detecte explícitamente qué propiedad del JSON está mutando (ej: node.imagen = ...)
+          Object.keys(updates).forEach((key) => {
+            (node as any)[key] = (updates as any)[key];
+          });
         }
       }),
 
@@ -173,9 +248,14 @@ export const useZuherosStore = create<ZuherosState>()(
       set((state) => {
         const node = findNodeById(state.data, nodeId);
         if (!node || !node.opciones) return;
-        const option = node.opciones[index];
+        const option = {
+          ...node.opciones[index],
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        };
         // Insertamos la copia en la posición index + 1
-        node.opciones.splice(index + 1, 0, { ...option });
+        node.opciones.splice(index + 1, 0, {
+          ...option,
+        });
       }),
 
     addCardToNode: (nodeId, newCard) =>
@@ -213,6 +293,7 @@ export const useZuherosStore = create<ZuherosState>()(
       set((state) => {
         state.historyIds.push(state.currentNodeId);
         state.currentNodeId = id;
+        state.selectedNodeId = id;
       }),
 
     goBack: () =>
@@ -269,7 +350,10 @@ export const useZuherosStore = create<ZuherosState>()(
       set((state) => {
         const node = findNodeById(state.data, nodeId);
         if (!node || !node.card) return;
-        const card = node.card[cardIndex];
+        const card = {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          ...node.card[cardIndex],
+        };
         // Insertamos la copia en la posición cardIndex + 1
         node.card.splice(cardIndex + 1, 0, { ...card });
       }),

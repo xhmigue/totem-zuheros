@@ -23,6 +23,7 @@
     "recharts": "^3.7.0",
     "sweetalert2": "^11.26.18",
     "video.js": "^8.23.7",
+    "vite-plugin-terminal": "^1.4.0",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

@@ -1,10 +1,13 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Cropper from "react-easy-crop";
 import Swal from "sweetalert2";
 import { useZuherosStore } from "../store/kioskStore";
+import PocketBase from "pocketbase";
+import terminal from "virtual:terminal";
+import { NavigationNode } from "@/types";
+const pb = new PocketBase("https://pruebas.modularbox.com");
 
 // --- CONFIGURACIÓN DE DIMENSIONES ---
-// Aquí es donde defines el tamaño final de salida de tus imágenes
 const DIMENSIONES = {
   imagen: { width: 930, height: 453 },
 };
@@ -18,13 +21,10 @@ const getCroppedImg = async (
   await new Promise((resolve) => (image.onload = resolve));
 
   const canvas = document.createElement("canvas");
-
-  // 1. AQUÍ SE CAMBIAN LAS DIMENSIONES DEL CANVAS (EL RESULTADO FINAL)
   canvas.width = pixelCrop.width;
   canvas.height = pixelCrop.height;
 
   const ctx = canvas.getContext("2d");
-
   ctx?.drawImage(
     image,
     pixelCrop.x,
@@ -43,19 +43,26 @@ const getCroppedImg = async (
 };
 
 export const ImageUploader = ({
-  userId,
+  nodeId,
   imageNode,
+  handleFieldChange,
 }: {
-  userId: string;
+  nodeId: string;
   imageNode?: string;
+  handleFieldChange: (
+    field: keyof NavigationNode,
+    value: any,
+    nodeId: string,
+  ) => void;
 }) => {
-  const idNodo = useZuherosStore((state) => state.idNodo);
   const addImageUploader = useZuherosStore((state) => state.addImageUploader);
-  const updateNode = useZuherosStore((state) => state.updateNode);
-  const [image, setImage] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  // const updateNode = useZuherosStore((state) => state.updateNode);
 
-  // ESTADOS PARA EL MOVIMIENTO (Posicionamiento libre)
+  const [image, setImage] = useState<string | null>(null);
+
+  // Guardamos un Blob URL local prioritario para saltarnos PocketBase en la vista previa instantánea
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
+
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -64,13 +71,13 @@ export const ImageUploader = ({
     setCroppedAreaPixels(slashedPixels);
   }, []);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
       reader.onload = () => {
         setImage(reader.result as string);
-        setCrop({ x: 0, y: 0 }); // Resetear posición al cargar
+        setCrop({ x: 0, y: 0 });
         setZoom(1);
       };
     }
@@ -80,100 +87,131 @@ export const ImageUploader = ({
     try {
       if (!image || !croppedAreaPixels) return;
       const blob = await getCroppedImg(image, croppedAreaPixels);
-      const imageUrl = URL.createObjectURL(blob);
-      setImageUrl(imageUrl);
-      updateNode(userId, { imagen: `${userId}.png` });
+
+      // 1. Creamos el objeto de URL local binario
+      const blobUrl = URL.createObjectURL(blob);
+
+      // 2. Lo guardamos en el estado local del uploader para usarlo inmediatamente
+      setLocalPreviewUrl(blobUrl);
+
+      // 3. Pasamos el blobUrl al store para que viaje de forma síncrona
+      handleFieldChange("imagen", blobUrl, nodeId);
+
+      // 4. Agregamos a la cola para PocketBase
       addImageUploader({
-        tempId: userId,
+        tempId: nodeId,
         blob,
       });
-      setImage(null);
+
+      setImage(null); // Cierra el modal
+
       Swal.fire({
         icon: "success",
-        title: "¡Actualizado!",
-        timer: 1500,
+        title: "¡Recorte preparado!",
+        text: "Recuerda pulsar Guardar para subir los cambios.",
+        timer: 2000,
         showConfirmButton: false,
       });
     } catch (error) {
       console.error(error);
-      Swal.fire("Error", "No se pudo procesar", "error");
+      Swal.fire("Error", "No se pudo procesar el recorte", "error");
     }
   };
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow-lg border border-slate-200">
-      <h3 className="text-xl font-bold mb-6 text-slate-800 tracking-tight">
-        Identidad Visual
-      </h3>
+    <div className="w-full">
+      <label className="text-sm font-semibold text-slate-500 uppercase">
+        ({DIMENSIONES.imagen.width}x{DIMENSIONES.imagen.height})px
+      </label>
 
-      {/* BOTÓN Image CON PREVIEW */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold text-slate-500 uppercase">
-          Imagen ({DIMENSIONES.imagen.width}x{DIMENSIONES.imagen.height})
-        </label>
-        <input
-          type="file"
-          id="image-upload"
-          className="hidden"
-          accept="image/*"
-          onChange={(e) => handleFileChange(e)}
-        />
-        <button
-          onClick={() => document.getElementById("image-upload")?.click()}
-          className="relative h-48 w-full border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden group hover:border-blue-500 hover:bg-blue-50 transition-all"
-        >
-          {imageNode ? (
+      <input
+        type="file"
+        id={`image-upload-${nodeId}`}
+        className="hidden"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
+
+      {/* BOTÓN DE DISPARO CON PREVIEW ESTRATÉGICO */}
+      <button
+        type="button"
+        onClick={() =>
+          document.getElementById(`image-upload-${nodeId}`)?.click()
+        }
+        className="relative h-48 w-full border-2 border-dashed border-slate-300 rounded-2xl overflow-hidden group hover:border-blue-500 hover:bg-blue-50 transition-all flex items-center justify-center"
+      >
+        {/* PRIORIDAD 1: Si hay recorte local reciente, muéstralo sin consultar red */}
+        {localPreviewUrl ? (
+          <img
+            src={localPreviewUrl}
+            className="w-full h-full object-contain p-4"
+            alt="Local preview"
+          />
+        ) : imageNode ? (
+          imageNode.startsWith("blob") ? (
             <img
-              src={imageUrl ? imageUrl : `assets/images/${idNodo}/${imageNode}`}
-              alt="Preview"
+              src={imageNode}
               className="w-full h-full object-contain p-4"
+              alt="Totem"
             />
           ) : (
-            <div className="flex flex-col items-center text-slate-400">
-              <span className="text-3xl">🖼️</span>
-              <span>Subir Imagen</span>
-            </div>
-          )}
-        </button>
-      </div>
+            /* PRIORIDAD 2: Si no hay recorte local, que TotemImage resuelva el ID de PocketBase o URL antigua */
+            <TotemImage
+              imageId={imageNode}
+              className="w-full h-full object-contain p-4"
+            />
+          )
+        ) : (
+          /* FALLBACK: Icono por defecto */
+          <div className="flex flex-col items-center text-slate-400">
+            <span className="text-3xl">🖼️</span>
+            <span>Subir Imagen</span>
+          </div>
+        )}
+      </button>
 
-      {/* MODAL DE RECORTE */}
+      {/* MODAL / POPUP FLOTANTE (ESTILO INTERFAZ PROFESIONAL) */}
       {image && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl">
-            <div className="p-5 border-b flex justify-between items-center">
-              <h4 className="font-bold text-slate-800 uppercase tracking-tight">
-                Ajustar Posición
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl overflow-hidden shadow-2xl w-full max-w-2xl transform transition-all border border-slate-100">
+            {/* Cabecera */}
+            <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h4 className="font-bold text-slate-800 uppercase tracking-tight text-sm">
+                Ajustar Posición y Área de Recorte
               </h4>
               <button
                 onClick={() => setImage(null)}
-                className="text-slate-400 hover:text-red-500 text-2xl"
+                className="text-slate-400 hover:text-red-500 text-3xl font-light transition-colors"
               >
-                ×
+                &times;
               </button>
             </div>
 
-            <div className="relative h-80 w-full bg-slate-800">
+            {/* Zona de Corte Flotante */}
+            <div className="relative h-96 w-full bg-slate-950">
               <Cropper
                 image={image}
                 crop={crop}
                 zoom={zoom}
-                // 2. AQUÍ SE CAMBIA LA PROPORCIÓN DEL RECUADRO DE CORTE
                 aspect={DIMENSIONES.imagen.width / DIMENSIONES.imagen.height}
-                onCropChange={setCrop} // Esto permite que muevas la imagen con el mouse
+                onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
-                minZoom={0.5} // Permite alejar la imagen
-                maxZoom={3} // Permite acercar la imagen
-                restrictPosition={false} // Si quieres mover la imagen incluso fuera de los bordes, cámbialo a false
+                minZoom={0.5}
+                maxZoom={3}
+                restrictPosition={false}
               />
             </div>
 
-            <div className="p-8 bg-white">
+            {/* Controles del Modal */}
+            <div className="p-6 bg-white">
               <div className="mb-6">
-                <label className="text-xs font-bold text-slate-400 uppercase">
-                  Zoom: {Math.round(zoom * 100)}%
-                </label>
+                <div className="flex justify-between text-xs font-bold text-slate-500 uppercase mb-2">
+                  <span>Zoom del visor</span>
+                  <span className="text-blue-600">
+                    {Math.round(zoom * 100)}%
+                  </span>
+                </div>
                 <input
                   type="range"
                   value={zoom}
@@ -181,22 +219,24 @@ export const ImageUploader = ({
                   max={3}
                   step={0.01}
                   onChange={(e) => setZoom(Number(e.target.value))}
-                  className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-2"
+                  className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
               </div>
 
               <div className="flex gap-4">
                 <button
+                  type="button"
                   onClick={() => setImage(null)}
-                  className="flex-1 px-6 py-3 border border-slate-200 rounded-xl font-semibold"
+                  className="flex-1 px-6 py-3 border border-slate-200 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
+                  type="button"
                   onClick={handleUpload}
-                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200"
+                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"
                 >
-                  Guardar Recorte
+                  Confirmar y Aplicar
                 </button>
               </div>
             </div>
@@ -205,4 +245,132 @@ export const ImageUploader = ({
       )}
     </div>
   );
+};
+interface OptionImageProps {
+  imagenNode?: string;
+  idNodo: string; // Pasamos el idNodo desde el store si es necesario para el fallback local
+  className?: string;
+  altText?: string;
+}
+
+export const OptionImage = ({
+  imagenNode,
+  idNodo,
+  className,
+  altText = "Option preview",
+}: OptionImageProps) => {
+  const [resolvedUrl, setResolvedUrl] = useState<string>("");
+  console.log(imagenNode);
+  useEffect(() => {
+    const resolveImage = async () => {
+      if (!imagenNode) {
+        setResolvedUrl("");
+        return;
+      }
+      if (imagenNode.startsWith("blob")) {
+        setResolvedUrl(imagenNode);
+        return;
+      }
+      // 1. Salvaguarda por si todavía tiene los strings antiguos de assets locales o URLs directas
+      if (
+        imagenNode.startsWith("https") ||
+        imagenNode.endsWith(".png") ||
+        imagenNode.endsWith(".webp")
+      ) {
+        const url = imagenNode.startsWith("https")
+          ? imagenNode
+          : `assets/images/${idNodo}/${imagenNode}`;
+        setResolvedUrl(url);
+      } else {
+        // 2. Es un ID de PocketBase (colección imagenes_totem)
+        try {
+          const record = await pb
+            .collection("imagenes_totem")
+            .getOne(imagenNode);
+          const url = pb.files.getURL(record, record.archive);
+          setResolvedUrl(url);
+          return;
+        } catch (error) {
+          console.error(
+            "Error obteniendo la imagen de opción desde PocketBase:",
+            error,
+          );
+        }
+      }
+      setResolvedUrl("");
+    };
+
+    resolveImage();
+  }, [imagenNode, idNodo]);
+
+  if (!resolvedUrl) {
+    // Retorna un marcador de posición (placeholder) o null mientras carga o si no hay imagen
+    return (
+      <div
+        className={`${className} flex items-center justify-center bg-slate-100 text-slate-400`}
+      ></div>
+    );
+  }
+
+  return (
+    <img src={resolvedUrl} alt={`${altText}dsakjhsios`} className={className} />
+  );
+};
+
+interface TotemImageProps {
+  imageId: string;
+  className?: string;
+}
+
+export const TotemImage: React.FC<TotemImageProps> = ({
+  imageId,
+  className,
+}) => {
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+
+  console.log("imageId", imageId);
+  useEffect(() => {
+    if (!imageId) {
+      setLoading(false);
+      return;
+    }
+
+    if (imageId.startsWith("blob")) {
+      setImageUrl(imageId);
+      return;
+    }
+    // Si ya es una URL local o externa antigua
+    if (
+      imageId.startsWith("http") ||
+      imageId.endsWith(".png") ||
+      imageId.endsWith(".webp")
+    ) {
+      setImageUrl(imageId);
+      setLoading(false);
+      return;
+    }
+
+    // Si es un ID de PocketBase, lo resolvemos de forma asíncrona aislada
+    const fetchImage = async () => {
+      try {
+        const pb = new PocketBase("https://pruebas.modularbox.com");
+        const record = await pb.collection("imagenes_totem").getOne(imageId);
+        const url = pb.files.getURL(record, record.archive);
+        setImageUrl(url);
+      } catch (error) {
+        console.error("Error obteniendo la imagen de PocketBase:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchImage();
+  }, [imageId]);
+
+  if (loading)
+    return <div className={`${className} bg-gray-200 animate-pulse`} />; // Loader temporal
+  if (!imageUrl) return <div className={`${className} bg-gray-300`} />; // Fallback si no hay foto
+
+  return <img src={imageUrl} className={className} alt="Totem" />;
 };

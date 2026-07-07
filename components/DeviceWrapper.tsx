@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Header from "./Header";
-import KioskPlayer from "./KioskPlayer";
-
+import { Play, Monitor, RotateCcw, Pause } from "lucide-react";
+import { useZuherosStore } from "@/store/kioskStore";
 interface DeviceWrapperProps {
   children: React.ReactNode;
   targetWidth: number;
@@ -34,12 +34,14 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
   widthOverride,
   zoom: zoomProp,
 }) => {
+  const isPreview = useZuherosStore((state) => state.isPreview);
+  const secondsPreview = useZuherosStore((state) => state.secondsPreview);
   const [zoom, setZoom] = useState(zoomProp || 0.55);
   const [isIdle, setIsIdle] = useState(false); // Estado del protector
   const { width, height } = useScreenSize();
 
   // Configuración: Tiempo de espera (ejemplo: 30 segundos)
-  const IDLE_TIME = 30000;
+  const IDLE_TIME = secondsPreview * 1000;
 
   const resetTimer = useCallback(() => {
     setIsIdle(false);
@@ -84,7 +86,7 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
   const renderContent = () => (
     <div className="relative w-full h-full">
       {/* Protector de Pantalla (Video) */}
-      {isIdle && (
+      {(isIdle || isPreview) && (
         <div
           onClick={resetTimer} // Al hacer clic, desaparece
           style={{ height: `${targetHeight}px` }}
@@ -104,7 +106,7 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
               </div>
             </div>
           </div>
-          <KioskPlayer src={"http://localhost:8000/assets/playlist.m3u8"} />
+          <CarouselPreview />
           {/* <video
             autoPlay
             loop
@@ -113,7 +115,7 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
             className="w-full h-full object-cover"
           >
             <source
-              src="assets/videos/DJI_20250401173132_0029_D_Talle_Vertical.mp4"
+              src="assets/videos/video_final_60fps.mp4"
               type="video/mp4"
             />
           </video> */}
@@ -193,6 +195,122 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
           {renderContent()}
         </div>
       </div>
+    </div>
+  );
+};
+
+const ASPECT_RATIO_CLASS = "aspect-[9/16]";
+
+const CarouselPreview: React.FC = () => {
+  const items = useZuherosStore((state) => state.items);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [actualVideoDuration, setActualVideoDuration] = useState<number>(0);
+  const [playKey, setPlayKey] = useState(0); // Clave para reiniciar animaciones y efectos
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const timerRef = useRef<any>(null);
+
+  // Función para avanzar al siguiente slide
+  const nextStep = () => {
+    if (items.length <= 1) {
+      setPlayKey((prev) => prev + 1); // Reiniciar el mismo si solo hay uno
+      return;
+    }
+    setActiveIndex((current) =>
+      current + 1 >= items.length ? 0 : current + 1,
+    );
+    setPlayKey((prev) => prev + 1);
+  };
+
+  // Efecto principal de control de tiempo
+  useEffect(() => {
+    if (items.length === 0 || !isPlaying) return;
+
+    const currentItem = items[activeIndex];
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    // Lógica para IMÁGENES
+    if (currentItem.type === "image") {
+      const time = (currentItem.duration || 5) * 1000;
+      timerRef.current = setTimeout(nextStep, time);
+    }
+    // Lógica para VIDEOS con duración personalizada
+    else if (currentItem.type === "video" && currentItem.duration > 0) {
+      const time = currentItem.duration * 1000;
+      timerRef.current = setTimeout(nextStep, time);
+    }
+    // Si el video es duración 0, el evento onEnded del tag <video> maneja el cambio
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [activeIndex, items, playKey, isPlaying]);
+
+  const handleManualSelect = (index: number) => {
+    setActiveIndex(index);
+    setPlayKey((prev) => prev + 1);
+    setIsPlaying(true);
+  };
+
+  const getObjectPosition = (pos: string) => {
+    switch (pos) {
+      case "left":
+        return "left center";
+      case "right":
+        return "right center";
+      default:
+        return "center center";
+    }
+  };
+
+  const getEffectiveDuration = () => {
+    const currentItem = items[activeIndex];
+    if (!currentItem) return 5;
+    if (currentItem.type === "image") return currentItem.duration;
+    if (currentItem.type === "video") {
+      return currentItem.duration > 0
+        ? currentItem.duration
+        : actualVideoDuration || 10;
+    }
+    return 5;
+  };
+
+  return (
+    <div className="w-full h-full relative">
+      {items.length > 0 && (
+        <div className="w-full h-full relative">
+          {items.map((item, index) =>
+            item.type === "image" ? (
+              <img
+                src={item.url}
+                className="w-full h-full object-cover"
+                style={{
+                  objectPosition: getObjectPosition(item.position),
+                }}
+              />
+            ) : (
+              <video
+                ref={activeIndex === index ? videoRef : null}
+                src={item.url}
+                autoPlay={activeIndex === index && isPlaying}
+                muted
+                playsInline
+                onLoadedMetadata={(e) =>
+                  setActualVideoDuration(e.currentTarget.duration)
+                }
+                onEnded={() => {
+                  if (item.duration === 0) nextStep();
+                }}
+                className="w-full h-full object-cover"
+                style={{
+                  objectPosition: getObjectPosition(item.position),
+                }}
+              />
+            ),
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -21,7 +21,7 @@ const Home: React.FC = () => {
       <div className="flex gap-10">
         {/* Card Editor */}
         <Link
-          to="/editor"
+          to="/editor/138"
           className="group w-80 p-8 bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all border-2 border-transparent hover:border-[#1c6c3e] text-center"
         >
           <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
@@ -54,14 +54,13 @@ const Home: React.FC = () => {
 };
 
 // Ejemplo de tu router
-// <Route path="/preview-kiosk" element={<KioskPreviewPage />} />
 // --- COMPONENTE PRINCIPAL CON RUTAS ---
 const App: React.FC = () => {
   return (
-    <Router basename="/views/pages/totem_react">
+    <Router basename={process.env.BASE_NAME}>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/editor" element={<AppEditor />} />
+        <Route path="/editor/:idNodo" element={<AppEditor />} />
         <Route path="/stats" element={<AppStatsPanel />} />
         <Route path="/preview-kiosk" element={<AppPreview />} />
         <Route

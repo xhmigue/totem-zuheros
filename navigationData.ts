@@ -39,26 +39,15 @@ DJI_20250401174001_0036_D.webp
 */
 export const ZUHEROS_DATA: NavigationNode = {
   id: "root",
-  tipo: "submenu",
-  titulo: "Inicio",
-  logo: "home",
   opciones: [
     {
-      id: "turismo-cultural",
+      id: "1774008964277-sny4456",
+      imagen: "1774008964277-sny4456.png",
       tipo: "submenu",
-      titulo: "Turismo Cultural",
-      logo: "DJI_20250401112443_0002_D.webp",
       tipoLogo: "image",
+      titulo: "Turismo Cultural",
       opciones: [
         {
-          id: "cueva-de-los-murcielagos",
-          tipo: "text",
-          titulo: "CUEVA DE LOS MURCIÉLAGOS",
-          tituloGeneral: "Turismo Cultural",
-          logo: "DJI_20250401173118_0028_D.webp",
-          tipoLogo: "image",
-          descripcion:
-            "Espectacular fortaleza roquera de origen árabe (siglo IX) que se funde con la roca caliza. Ofrece las mejores vistas del pueblo y la Subbética. Fue residencia de los Señores de Zuheros y conserva restos de su palacio renacentista.",
           card: [
             {
               tipo: "text-h2",
@@ -67,11 +56,8 @@ export const ZUHEROS_DATA: NavigationNode = {
             },
             {
               tipo: "text-p",
-              titulo: `Situada a 4 kilómetros del término municipal de Zuheros, en la
-              carretera CV 247, esta cavidad es, hasta el momento, la más grande de la provincia de Córdoba,
-              con **3367,9 metros topografiados**. Se encuentra en pleno
-              **Geoparque de las Sierras Subbéticas** a 976,55 metros de altitud sobre el nivel
-              del mar.`,
+              titulo:
+                "Situada a 4 kilómetros del término municipal de Zuheros, en la\n              carretera CV 247, esta cavidad es, hasta el momento, la más grande de la provincia de Córdoba,\n              con **3367,9 metros topografiados**. Se encuentra en pleno\n              **Geoparque de las Sierras Subbéticas** a 976,55 metros de altitud sobre el nivel\n              del mar.",
             },
             {
               tipo: "text-h3",
@@ -79,9 +65,8 @@ export const ZUHEROS_DATA: NavigationNode = {
             },
             {
               tipo: "text-p",
-              titulo: `Su nombre, **“Cueva de los Murciélagos”**, se debe a la gran cantidad de
-            estos mamíferos que la habitaban. En la actualidad, según el último
-            censo, solo residen unos 200 ejemplares.`,
+              titulo:
+                "Su nombre, **“Cueva de los Murciélagos”**, se debe a la gran cantidad de\n            estos mamíferos que la habitaban. En la actualidad, según el último\n            censo, solo residen unos 200 ejemplares.",
             },
             {
               tipo: "text-h3",
@@ -89,10 +74,8 @@ export const ZUHEROS_DATA: NavigationNode = {
             },
             {
               tipo: "text-p",
-              titulo: `El constante filtrado de agua desde la superficie, diversas reacciones
-            químicas y el paso de miles de años, son los responsables de crear esta
-            impresionante cavidad con sus numerosas salas y espeleotemas. Este lugar fue,
-            además, elegido por nuestros antepasados durante la Prehistoria para vivir.`,
+              titulo:
+                "El constante filtrado de agua desde la superficie, diversas reacciones\n            químicas y el paso de miles de años, son los responsables de crear esta\n            impresionante cavidad con sus numerosas salas y espeleotemas. Este lugar fue,\n            además, elegido por nuestros antepasados durante la Prehistoria para vivir.",
             },
             {
               tipo: "text-h3",
@@ -100,9 +83,8 @@ export const ZUHEROS_DATA: NavigationNode = {
             },
             {
               tipo: "text-p",
-              titulo: `La cueva se visita mediante **visitas guiadas** donde descubrirás no solo las  
-            maravillas geológicas del interior de la tierra, sino también cómo
-            era la forma de vida durante la Prehistoria.`,
+              titulo:
+                "La cueva se visita mediante **visitas guiadas** donde descubrirás no solo las  \n            maravillas geológicas del interior de la tierra, sino también cómo\n            era la forma de vida durante la Prehistoria.",
             },
             {
               tipo: "text-h2",
@@ -110,21 +92,19 @@ export const ZUHEROS_DATA: NavigationNode = {
             },
             {
               tipo: "text-p",
-              titulo: `Por motivos de conservación y regeneración del microclima de la Cueva, y al ser la visita guiada, el acceso  
-            a la misma se encuentra limitado. Para garantizar su visita es necesario realizar la **reserva CON ANTELACIÓN**.`,
+              titulo:
+                "Por motivos de conservación y regeneración del microclima de la Cueva, y al ser la visita guiada, el acceso  \n            a la misma se encuentra limitado. Para garantizar su visita es necesario realizar la **reserva CON ANTELACIÓN**.",
             },
             {
               tipo: "text-p",
-              titulo: `Las reservas se realizan de **miércoles a domingo de 10:00 a 13:30** en
-            el **957694545** o bien a través de nuestro correo electrónico (turismo@zuheros.es).`,
+              titulo:
+                "Las reservas se realizan de **miércoles a domingo de 10:00 a 13:30** en\n            el **957694545** o bien a través de nuestro correo electrónico (turismo@zuheros.es).",
             },
             {
               tipo: "text-h3",
               titulo: "Horarios de Pases",
             },
             {
-              tipo: "table-schedules",
-              titulo: "Horarios de Pases",
               contenido: {
                 columnas: [
                   "Días",
@@ -144,14 +124,14 @@ export const ZUHEROS_DATA: NavigationNode = {
                   },
                 ],
               },
+              tipo: "table-schedules",
+              titulo: "Horarios de Pases",
             },
             {
               tipo: "text-h2",
               titulo: "Tarifas",
             },
             {
-              tipo: "table-rates",
-              titulo: "TARIFAS CUEVA DE LOS MURCIÉLAGOS",
               color: "red",
               contenido: {
                 columnas: [
@@ -177,10 +157,10 @@ export const ZUHEROS_DATA: NavigationNode = {
                   },
                 ],
               },
+              tipo: "table-rates",
+              titulo: "TARIFAS CUEVA DE LOS MURCIÉLAGOS",
             },
             {
-              tipo: "table-rates",
-              titulo: "TARIFAS VISITA CULTURAL",
               color: "purple",
               contenido: {
                 columnas: [
@@ -206,256 +186,252 @@ export const ZUHEROS_DATA: NavigationNode = {
                   },
                 ],
               },
+              tipo: "table-rates",
+              titulo: "TARIFAS VISITA CULTURAL",
             },
             {
               tipo: "text-p-relaxed",
-              titulo: `* Tarifa especial: jubilados, pensionistas, estudiantes,
-                familias numerosas, personas con discapacidad.`,
+              titulo:
+                "* Tarifa especial: jubilados, pensionistas, estudiantes,\n                familias numerosas, personas con discapacidad.",
             },
             {
               tipo: "text-p-relaxed",
-              titulo: `* Grupos: a partir de 10 personas con reserva previa.`,
+              titulo: "* Grupos: a partir de 10 personas con reserva previa.",
             },
           ],
+          descripcion:
+            "Espectacular fortaleza roquera de origen árabe (siglo IX) que se funde con la roca caliza. Ofrece las mejores vistas del pueblo y la Subbética. Fue residencia de los Señores de Zuheros y conserva restos de su palacio renacentista.",
+          id: "1774008964281-vgvkrku",
+          imagen: "DJI_20250401173118_0028_D.webp",
+          tipo: "text",
+          tipoLogo: "image",
+          titulo: "CUEVA DE LOS MURCIÉLAGOS",
+          tituloGeneral: "Turismo Cultural zuheros",
         },
         {
-          id: "ecomuseo-cueva-de-los-murcielagos",
-          tipo: "submenu",
-          titulo: "ECOMUSEO CUEVA DE LOS MURCIÉLAGOS",
-          logo: "DJI_20250401173118_0028_D.webp",
-          tipoLogo: "image",
+          id: "1774008964281-rjgg0bu",
+          imagen: "DJI_20250401173118_0028_D.webp",
           opciones: [
             {
-              id: "museo-arqueologico",
-              tipo: "text",
-              titulo: "Museo Arqueológico",
-              logo: "https://images.unsplash.com/photo-1572953108213-d47293902331?q=80&w=800",
-              imagen:
-                "https://images.unsplash.com/photo-1572953108213-d47293902331?q=80&w=1200",
               descripcion:
                 "Recoge los hallazgos encontrados en la Cueva de los Murciélagos, desde el Neolítico hasta la época romana. Es fundamental para entender la prehistoria de Andalucía.",
+              id: "1774008964281-0903dry",
+              imagen:
+                "https://images.unsplash.com/photo-1572953108213-d47293902331?q=80&w=1200",
+              tipo: "text",
+              titulo: "Museo Arqueológico",
             },
             {
-              id: "museo-costumbres",
-              tipo: "text",
-              titulo: "Museo de Costumbres",
-              logo: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800",
-              imagen:
-                "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=1200",
               descripcion:
                 "Ubicado en una casa tradicional, muestra herramientas agrícolas, artesanas y objetos de la vida cotidiana de nuestros antepasados.",
+              id: "1774008964281-i39rfm1",
+              imagen:
+                "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=1200",
+              tipo: "text",
+              titulo: "Museo de Costumbres",
             },
           ],
+          tipo: "submenu",
+          tipoLogo: "image",
+          titulo: "ECOMUSEO CUEVA DE LOS MURCIÉLAGOS",
         },
         {
-          id: "castillo-palacio",
+          id: "1774008964281-2hjl7a8",
+          imagen: "DJI_20250401173118_0028_D.webp",
+          opciones: [],
           tipo: "submenu",
+          tipoLogo: "image",
           titulo: "CASTILLO PALACIO",
-          logo: "DJI_20250401173118_0028_D.webp",
-          tipoLogo: "image",
-          opciones: [],
         },
         {
-          id: "museo-arqueologico",
+          id: "1774008964281-8bgzogu",
+          imagen: "DJI_20250401173118_0028_D.webp",
+          opciones: [],
           tipo: "submenu",
+          tipoLogo: "image",
           titulo: "MUSEO ARQUEOLÓGICO",
-          logo: "DJI_20250401173118_0028_D.webp",
-          tipoLogo: "image",
-          opciones: [],
         },
         {
-          id: "museo-costumbres-y-artes-populares",
+          id: "1774008964281-naz6vae",
+          imagen: "DJI_20250401173118_0028_D.webp",
+          opciones: [],
           tipo: "submenu",
+          tipoLogo: "image",
           titulo: "MUSEO DE COSTUMBRES Y ARTES POPULARES",
-          logo: "DJI_20250401173118_0028_D.webp",
-          tipoLogo: "image",
-          opciones: [],
         },
         {
-          id: "observatorio",
+          id: "1774008964281-xv5tki0",
+          imagen: "DJI_20250401173118_0028_D.webp",
+          opciones: [],
           tipo: "submenu",
+          tipoLogo: "image",
           titulo: "OBSERVATORIO",
-          logo: "DJI_20250401173118_0028_D.webp",
-          tipoLogo: "image",
-          opciones: [],
         },
         {
-          id: "iglesia",
+          id: "1774008964281-d22ix7i",
+          imagen: "DJI_20250401173118_0028_D.webp",
+          opciones: [],
           tipo: "submenu",
+          tipoLogo: "image",
           titulo: "IGLESIA",
-          logo: "DJI_20250401173118_0028_D.webp",
-          tipoLogo: "image",
-          opciones: [],
         },
         {
-          id: "museo-estudio-del-pintor-francisco-poyato",
-          tipo: "submenu",
-          titulo: "MUSEO ESTUDIO DEL PINTOR FRANCISCO POYATO",
-          logo: "DJI_20250401173118_0028_D.webp",
-          tipoLogo: "image",
+          id: "1774008964281-f4t3x1u",
+          imagen: "DJI_20250401173118_0028_D.webp",
           opciones: [],
+          tipo: "submenu",
+          tipoLogo: "image",
+          titulo: "MUSEO ESTUDIO DEL PINTOR FRANCISCO POYATO",
         },
       ],
     },
     {
-      id: "naturaleza",
+      id: "1774008964281-ppj5kss",
       tipo: "submenu",
-      titulo: "Turismo de Naturaleza",
-      logo: "DJI_20250401112750_0006_D.webp",
       tipoLogo: "image",
+      titulo: "Turismo de Naturaleza",
       opciones: [
         {
-          id: "cueva-murcielagos",
-          tipo: "text",
-          titulo: "Cueva de los Murciélagos",
-          logo: "https://images.unsplash.com/photo-1502759683299-cdcc69741a7f?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1502759683299-cdcc69741a7f?q=80&w=1200",
           descripcion:
             "Monumento Natural de Andalucía. Una de las cuevas más importantes de Europa por sus pinturas rupestres y formaciones geológicas. Se encuentra a 4km del núcleo urbano, en lo más alto de la sierra.",
+          id: "1774008964281-crcpk02",
+          imagen:
+            "https://images.unsplash.com/photo-1502759683299-cdcc69741a7f?q=80&w=1200",
+          tipo: "text",
+          titulo: "Cueva de los Murciélagos",
         },
         {
-          id: "via-verde",
-          tipo: "text",
-          titulo: "Vía Verde del Aceite",
-          logo: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200",
           descripcion:
             "Antiguo trazado ferroviario convertido en sendero para ciclistas y caminantes. Atraviesa paisajes infinitos de olivares y ofrece una perspectiva única del Geoparque de las Sierras Subbéticas.",
+          id: "1774008964281-47l2kcn",
+          imagen:
+            "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200",
+          tipo: "text",
+          titulo: "Vía Verde del Aceite",
         },
       ],
     },
     {
-      id: "productos",
+      id: "1774008964281-psadhql",
       tipo: "submenu",
+      tipoLogo: "image",
       titulo: "Productos de la Tierra",
-      logo: "DJI_20250401114738_0027_D.webp",
-      tipoLogo: "image",
       opciones: [
         {
-          id: "quesos",
-          tipo: "text",
-          titulo: "Quesos de Zuheros",
-          logo: "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
           descripcion:
             "Famosos internacionalmente. Elaborados de forma artesanal con leche de cabra. No te pierdas la Fiesta del Queso en septiembre, donde se reúnen los mejores productores del país.",
+          id: "1774008964281-wvj697l",
+          imagen:
+            "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
+          tipo: "text",
+          titulo: "Quesos de Zuheros",
         },
         {
-          id: "aceite",
-          tipo: "text",
-          titulo: "Aceite de Oliva D.O. Baena",
-          logo: "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=1200",
           descripcion:
             'El "oro líquido" de nuestra tierra. Zuheros pertenece a la prestigiosa Denominación de Origen Baena. Un aceite virgen extra con matices únicos gracias al clima de sierra.',
+          id: "1774008964281-2coturc",
+          imagen:
+            "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=1200",
+          tipo: "text",
+          titulo: "Aceite de Oliva D.O. Baena",
         },
       ],
     },
     {
-      id: "fiestas-tradicionales",
+      id: "1774008964281-obc9rzm",
       tipo: "submenu",
+      tipoLogo: "image",
       titulo: "FIESTAS TRADICIONALES",
-      logo: "DJI_20250401173118_0028_D.webp",
-      tipoLogo: "image",
       opciones: [
         {
-          id: "quesos",
-          tipo: "text",
-          titulo: "Quesos de Zuheros",
-          logo: "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
           descripcion:
             "Famosos internacionalmente. Elaborados de forma artesanal con leche de cabra. No te pierdas la Fiesta del Queso en septiembre, donde se reúnen los mejores productores del país.",
+          id: "1774008964281-66loavr",
+          imagen:
+            "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
+          tipo: "text",
+          titulo: "Quesos de Zuheros",
         },
         {
-          id: "aceite",
-          tipo: "text",
-          titulo: "Aceite de Oliva D.O. Baena",
-          logo: "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=1200",
           descripcion:
             'El "oro líquido" de nuestra tierra. Zuheros pertenece a la prestigiosa Denominación de Origen Baena. Un aceite virgen extra con matices únicos gracias al clima de sierra.',
+          id: "1774008964281-i15chft",
+          imagen:
+            "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=1200",
+          tipo: "text",
+          titulo: "Aceite de Oliva D.O. Baena",
         },
       ],
     },
     {
-      id: "servicios",
+      id: "1774008964281-4gzfnm6",
+      imagen: "DJI_20250401173805_0032_D.webp",
       tipo: "submenu",
+      tipoLogo: "image",
       titulo: "SERVICIOS",
-      logo: "DJI_20250401173805_0032_D.webp",
-      tipoLogo: "image",
       opciones: [
         {
-          id: "quesos",
-          tipo: "text",
-          titulo: "Quesos de Zuheros",
-          logo: "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
           descripcion:
             "Famosos internacionalmente. Elaborados de forma artesanal con leche de cabra. No te pierdas la Fiesta del Queso en septiembre, donde se reúnen los mejores productores del país.",
+          id: "1774008964281-hjeyc2n",
+          imagen:
+            "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
+          tipo: "text",
+          titulo: "Quesos de Zuheros",
         },
         {
-          id: "aceite",
-          tipo: "text",
-          titulo: "Aceite de Oliva D.O. Baena",
-          logo: "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=1200",
           descripcion:
             'El "oro líquido" de nuestra tierra. Zuheros pertenece a la prestigiosa Denominación de Origen Baena. Un aceite virgen extra con matices únicos gracias al clima de sierra.',
+          id: "1774008964281-h3vrvgs",
+          imagen:
+            "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=1200",
+          tipo: "text",
+          titulo: "Aceite de Oliva D.O. Baena",
         },
       ],
     },
     {
-      id: "agenda-mensual",
+      id: "1774008964281-j2ypgg9",
+      imagen: "DJI_20250401173438_0031_D.webp",
       tipo: "submenu",
-      titulo: "AGENDA MENSUAL",
-      logo: "DJI_20250401173438_0031_D.webp",
       tipoLogo: "image",
+      titulo: "AGENDA MENSUAL",
       opciones: [
         {
-          id: "quesos",
-          tipo: "text",
-          titulo: "Quesos de Zuheros",
-          logo: "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
           descripcion:
             "Famosos internacionalmente. Elaborados de forma artesanal con leche de cabra. No te pierdas la Fiesta del Queso en septiembre, donde se reúnen los mejores productores del país.",
+          id: "1774008964281-fzbww17",
+          imagen:
+            "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
+          tipo: "text",
+          titulo: "Quesos de Zuheros",
         },
         {
-          id: "aceite",
-          tipo: "text",
-          titulo: "Aceite de Oliva D.O. Baena",
-          logo: "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=800",
-          imagen:
-            "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=1200",
           descripcion:
             'El "oro líquido" de nuestra tierra. Zuheros pertenece a la prestigiosa Denominación de Origen Baena. Un aceite virgen extra con matices únicos gracias al clima de sierra.',
+          id: "1774008964281-1qc1pmk",
+          imagen:
+            "https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?q=80&w=1200",
+          tipo: "text",
+          titulo: "Aceite de Oliva D.O. Baena",
         },
       ],
     },
   ],
   protectordepantalla: {
+    descripcion: "Protege tu pantalla contra el daño causado por el sol.",
+    duracion: 10,
     id: "protectordepantalla",
-    tipo: "text",
-    titulo: "Protector de Pantalla",
-    logo: "https://cdn-icons-png.flaticon.com/512/3081/3081918.png",
     imagen:
       "https://images.unsplash.com/photo-1485962391905-dc37bb36704b?q=80&w=1200",
-    video: "https://www.youtube.com/watch?v=1234567890",
-    protectordepantalla: true,
-    duracion: 10,
     inactividad: 60,
-    tiempo: 10,
+    protectordepantalla: true,
     seleccionarprotector: "imagen",
-    descripcion: "Protege tu pantalla contra el daño causado por el sol.",
+    tiempo: 10,
+    tipo: "text",
+    titulo: "Protector de Pantalla",
+    video: "https://www.youtube.com/watch?v=1234567890",
   },
+  tipo: "submenu",
+  titulo: "Inicio",
 };
